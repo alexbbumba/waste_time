@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "275404572479",
+    "project_id": "waste-app-f799b",
+    "storage_bucket": "waste-app-f799b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275404572479:android:6b947ba8462eb8d054f58a",
+        "android_client_info": {
+          "package_name": "com.example.waste_time"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275404572479-jsei24p7cp329gf79bnbqucjjhiqsp7e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhxtrxg1g1I3uBrfK7bBQBS9UDaotexI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275404572479-jsei24p7cp329gf79bnbqucjjhiqsp7e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
