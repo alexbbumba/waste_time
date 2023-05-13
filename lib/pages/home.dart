@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:waste_time/pages/service_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waste_time/widgets/resuable_card.dart';
+import 'package:waste_time/widgets/reusable_card_content.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,132 +16,119 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        //  backgroundColor: Color.fromARGB(255, 205, 211, 216),
-        body: Padding(
-      padding: EdgeInsets.fromLTRB(10, 80, 10, 0),
-      child: Column(
-        children: [
-          Container(
-              padding: EdgeInsets.all(110.0),
-              decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Text('welcome to Waste_time')),
-          SizedBox(
-            height: 20.0,
+        backgroundColor: Colors.white,
+        extendBody: true,
+        appBar: AppBar(
+          elevation: 0,
+          toolbarHeight: 90,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(40))),
+          title: Text(
+            '${_auth.currentUser!.displayName}, Welcome to Waste Time',
+            style: const TextStyle(
+              fontSize: 15.5,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          centerTitle: true,
+          backgroundColor: Colors.green,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.only(left: 15, right: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                  child: Container(
-                padding: EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Column(
-                  children: const [
-                    Icon(
-                      Icons.notifications,
-                      color: Colors.white,
-                    ),
-                    Text('Notifications',
-                        style: TextStyle(fontSize: 20.0, color: Colors.white))
-                  ],
-                ),
-              )),
-              Container(
-                  child: Container(
-                padding: EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Column(
-                  children: const [
-                    Icon(
-                      Icons.chat,
-                      color: Colors.white,
-                    ),
-                    Text('Chat with US',
-                        style: TextStyle(fontSize: 20.0, color: Colors.white))
-                  ],
-                ),
-              )),
-            ],
-          ),
-          SizedBox(
-            height: 20.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ServiceProviders(),
-                      ));
-                },
-                child: Container(
-                    child: Container(
-                  padding: EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 177, 172, 175),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.room_service,
-                        color: Colors.yellow,
-                      ),
-                      Text('Service Providers',
-                          style: TextStyle(
-                              fontSize: 20.0,
-                              color: Color.fromARGB(218, 8, 96, 155)))
-                    ],
-                  ),
-                )),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.01,
               ),
-              Container(
-                  child: Container(
-                padding: EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.account_box,
-                      color: Colors.yellow,
-                    ),
-                    Text('Account',
-                        style: TextStyle(fontSize: 20.0, color: Colors.white))
-                  ],
-                ),
-              )),
-              Container(
-                  child: Column(
+              Row(
                 children: [
-                  Text('patient'),
-                  IconButton(
-                      onPressed: () async {
-                        await _auth.signOut();
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/', (Route<dynamic> route) => false);
-                      },
-                      icon: Icon(Icons.lock_clock)),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ReusableCard(
+                            cardChild: const ReusableCardContent(
+                              imageLink: "assets/images/schedule.png",
+                              label: 'Schedule Service',
+                            ),
+                            action: () {
+                              // Navigator.of(context).pushAndRemoveUntil(
+                              //     MaterialPageRoute(
+                              //         builder: (context) =>
+                              //             CommodityPricesScreen(
+                              //               commodityItems: commodityItems,
+                              //             )),
+                              //     (route) => true);
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: ReusableCard(
+                            cardChild: const ReusableCardContent(
+                              imageLink: "assets/images/chat.png",
+                              label: 'Chat with us',
+                            ),
+                            action: () {
+                              // Navigator.of(context).pushAndRemoveUntil(
+                              //     MaterialPageRoute(
+                              //         builder: (context) => const DistrictsPage(
+                              //               screen: 'home',
+                              //             )),
+                              //     (route) => true);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
-              )),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ReusableCard(
+                            cardChild: const ReusableCardContent(
+                              imageLink: "assets/images/recents.png",
+                              label: 'Recent Schedules',
+                            ),
+                            action: () async {
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //       builder: (BuildContext context) =>
+                              //           const GroupIndex()),
+                              // );
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: ReusableCard(
+                            cardChild: const ReusableCardContent(
+                              imageLink: "assets/images/account.png",
+                              label: 'Account',
+                            ),
+                            action: () async {
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //       builder: (BuildContext context) =>
+                              //           const FarmerGrpMembers()),
+                              // );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.04,
+              ),
             ],
           ),
-        ],
-      ),
-    ));
+        ));
   }
 }

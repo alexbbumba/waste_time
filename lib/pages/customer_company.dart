@@ -24,7 +24,7 @@ class _CustomerOrCompanyState extends State<CustomerOrCompany> {
     var basicInfo = snap.data() as Map<String, dynamic>;
 
     isCompany = basicInfo['type'] == 'company' ? true : false;
-    print('isCompany : $isCompany');
+    debugPrint('isCompany : $isCompany');
     setState(() {
       _isLoading = false;
     });

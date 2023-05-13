@@ -22,13 +22,13 @@ class _WrapperState extends State<Wrapper> {
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasError) {
-              return Center(
+              return const Center(
                 child: Text('Something went wrong'),
               );
             } else if (snapshot.hasData) {
-              return CustomerOrCompany();
+              return const CustomerOrCompany();
             } else {
-              return Authenticate();
+              return const Authenticate();
             }
           }),
     );

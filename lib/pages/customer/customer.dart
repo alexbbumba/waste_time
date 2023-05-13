@@ -14,7 +14,7 @@ class _MainCustomerState extends State<MainCustomer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Home(),
     );
   }

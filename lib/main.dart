@@ -31,11 +31,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     _getUser();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Waste Time',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
