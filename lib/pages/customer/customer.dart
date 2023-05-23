@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waste_time/pages/home.dart';
 
 class MainCustomer extends StatefulWidget {
@@ -10,7 +10,7 @@ class MainCustomer extends StatefulWidget {
 }
 
 class _MainCustomerState extends State<MainCustomer> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {

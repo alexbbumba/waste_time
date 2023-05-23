@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waste_time/pages/customer/schedule/maps_ui.dart';
 import 'package:waste_time/widgets/resuable_card.dart';
 import 'package:waste_time/widgets/reusable_card_content.dart';
 
@@ -53,13 +54,10 @@ class _HomeState extends State<Home> {
                               label: 'Schedule Service',
                             ),
                             action: () {
-                              // Navigator.of(context).pushAndRemoveUntil(
-                              //     MaterialPageRoute(
-                              //         builder: (context) =>
-                              //             CommodityPricesScreen(
-                              //               commodityItems: commodityItems,
-                              //             )),
-                              //     (route) => true);
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => const MapSample()),
+                                  (route) => true);
                             },
                           ),
                         ),

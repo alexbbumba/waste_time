@@ -25,12 +25,13 @@ class AuthService {
       //   await FirebaseFirestore.instance.collection(user!.uid);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        debugPrint('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        debugPrint('The account already exists for that email.');
       }
     } catch (e) {
-      print(e);
+      // ignore: unnecessary_brace_in_string_interps
+      debugPrint("${e}");
     }
 
     user = credential!.user;
@@ -40,7 +41,7 @@ class AuthService {
       }
       await user.updateDisplayName(displayName);
 
-      String? name = (type == 0) ? 'ink. ${displayName}' : displayName;
+      String? name = (type == 0) ? 'ink. $displayName' : displayName;
       String accountType = (type == 0) ? 'company' : 'customer';
       FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'name': name,
@@ -82,9 +83,9 @@ class AuthService {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        debugPrint('No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        debugPrint('Wrong password provided for that user.');
       }
     }
   }
@@ -94,7 +95,7 @@ class AuthService {
     try {
       return await _auth.signOut();
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       return null;
     }
   }
