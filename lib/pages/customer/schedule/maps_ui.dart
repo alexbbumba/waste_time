@@ -133,9 +133,14 @@ class MapSampleState extends State<MapSample> {
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20))),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.only(left: 8, right: 8),
+                padding: const EdgeInsets.only(top: 10, left: 8, right: 8),
                 child: Column(
                   children: [
+                    const Text(
+                      "Select type of waste Company",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                     InputFieldWithoutIcon(
                       controller: scheduler.wasteCompanyController,
                       labelText: "Select Waste Company",
@@ -148,7 +153,92 @@ class MapSampleState extends State<MapSample> {
                                   companies: scheduler.companies),
                             ));
                       },
-                    )
+                    ),
+
+                    // choose the waste type
+                    scheduler.wasteCompanyController.text.isNotEmpty
+                        ? SizedBox(
+                            height: size.height * 0.18,
+                            width: size.width * 0.9,
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "Select type of waste",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    ElevatedButton.icon(
+                                        onPressed: () {},
+                                        icon:
+                                            const Icon(Icons.whatshot_rounded),
+                                        label: const Text(
+                                          "Domestic",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                    ElevatedButton.icon(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.radar),
+                                        label: const Text(
+                                          "Plastic",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    ElevatedButton.icon(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                            Icons.medication_liquid_rounded),
+                                        label: const Text(
+                                          "Medical Waste",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                    ElevatedButton.icon(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                            Icons.dirty_lens_outlined),
+                                        label: const Text(
+                                          "Industrial Waste",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )
+                        : const SizedBox(),
+
+                    // submit button
+                    scheduler.wasteCompanyController.text.isNotEmpty
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                elevation: 3,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 80, vertical: 15)),
+                            onPressed: () {},
+                            child: const Text(
+                              "Schedule",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ))
+                        : const SizedBox(),
                   ],
                 ),
               ),

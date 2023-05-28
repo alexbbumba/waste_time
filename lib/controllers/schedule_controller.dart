@@ -24,6 +24,7 @@ class ScheduleController extends GetxController {
   showCompanies() {
     fetchCompanies().then((value) {
       companies.addAll(value);
+      update();
     });
   }
 
