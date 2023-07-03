@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:waste_time/controllers/schedule_controller.dart';
 import 'package:waste_time/pages/customer/schedule/company_selection.dart';
+import 'package:waste_time/pages/customer/schedule/waste_estimation_screen.dart';
 import 'package:waste_time/widgets/input_field_withouticon.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -173,24 +174,51 @@ class MapSampleState extends State<MapSample> {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     ElevatedButton.icon(
-                                        onPressed: () {},
-                                        icon:
-                                            const Icon(Icons.whatshot_rounded),
-                                        label: const Text(
-                                          "Domestic",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )),
+                                      onPressed: () {
+                                        setState(() {
+                                          scheduler.isDomesticSelected =
+                                              !scheduler.isDomesticSelected;
+                                        });
+                                      },
+                                      icon: scheduler.isDomesticSelected
+                                          ? const Icon(Icons.check)
+                                          : const Icon(Icons.whatshot_rounded),
+                                      label: const Text(
+                                        "Domestic",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              scheduler.isDomesticSelected
+                                                  ? Colors.red
+                                                  : const Color.fromARGB(
+                                                      255, 0, 140, 255)),
+                                    ),
                                     ElevatedButton.icon(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.radar),
-                                        label: const Text(
-                                          "Plastic",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )),
+                                      onPressed: () {
+                                        setState(() {
+                                          scheduler.isPlasticSelected =
+                                              !scheduler.isPlasticSelected;
+                                        });
+                                      },
+                                      icon: scheduler.isPlasticSelected
+                                          ? const Icon(Icons.check)
+                                          : const Icon(Icons.radar),
+                                      label: const Text(
+                                        "Plastic",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              scheduler.isPlasticSelected
+                                                  ? Colors.red
+                                                  : const Color.fromARGB(
+                                                      255, 0, 140, 255)),
+                                    ),
                                   ],
                                 ),
                                 Row(
@@ -198,25 +226,53 @@ class MapSampleState extends State<MapSample> {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     ElevatedButton.icon(
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                            Icons.medication_liquid_rounded),
-                                        label: const Text(
-                                          "Medical Waste",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )),
+                                      onPressed: () {
+                                        setState(() {
+                                          scheduler.isMedicalSelected =
+                                              !scheduler.isMedicalSelected;
+                                        });
+                                      },
+                                      icon: scheduler.isMedicalSelected
+                                          ? const Icon(Icons.check)
+                                          : const Icon(
+                                              Icons.medication_liquid_rounded),
+                                      label: const Text(
+                                        "Medical Waste",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              scheduler.isMedicalSelected
+                                                  ? Colors.red
+                                                  : const Color.fromARGB(
+                                                      255, 0, 140, 255)),
+                                    ),
                                     ElevatedButton.icon(
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                            Icons.dirty_lens_outlined),
-                                        label: const Text(
-                                          "Industrial Waste",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )),
+                                      onPressed: () {
+                                        setState(() {
+                                          scheduler.isIndustrialSelected =
+                                              !scheduler.isIndustrialSelected;
+                                        });
+                                      },
+                                      icon: scheduler.isIndustrialSelected
+                                          ? const Icon(Icons.check)
+                                          : const Icon(
+                                              Icons.dirty_lens_outlined),
+                                      label: const Text(
+                                        "Industrial Waste",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              scheduler.isIndustrialSelected
+                                                  ? Colors.red
+                                                  : const Color.fromARGB(
+                                                      255, 0, 140, 255)),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -232,9 +288,38 @@ class MapSampleState extends State<MapSample> {
                                 elevation: 3,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 80, vertical: 15)),
-                            onPressed: () {},
+                            onPressed: () {
+                              if (scheduler.isDomesticSelected == true ||
+                                  scheduler.isPlasticSelected == true ||
+                                  scheduler.isMedicalSelected == true ||
+                                  scheduler.isIndustrialSelected == true) {
+                                // move to screen for calculating the watse weight
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (BuildContext context) =>
+                                          WasteEstimationScreen(
+                                              isDomesticSelected:
+                                                  scheduler.isDomesticSelected,
+                                              isPlasticSelected:
+                                                  scheduler.isPlasticSelected,
+                                              isMedicalSelected:
+                                                  scheduler.isMedicalSelected,
+                                              isIndustrialSelected: scheduler
+                                                  .isIndustrialSelected),
+                                    ));
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content: Text(
+                                          "Please Select waste Type",
+                                          style: TextStyle(color: Colors.black),
+                                        )));
+                              }
+                            },
                             child: const Text(
-                              "Schedule",
+                              "Next",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ))

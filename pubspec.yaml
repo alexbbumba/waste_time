@@ -44,6 +44,8 @@ dependencies:
   cloud_firestore: ^4.5.2
   google_fonts: ^4.0.3
   get: ^4.6.5
+  sensors_plus: ^3.0.2
+  http: ^1.1.0
   
 dev_dependencies:
   flutter_test:

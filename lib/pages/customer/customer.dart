@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
-import 'package:waste_time/pages/home.dart';
+import 'package:waste_time/pages/customer/customer_home.dart';
 
 class MainCustomer extends StatefulWidget {
   const MainCustomer({super.key});

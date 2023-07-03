@@ -51,6 +51,7 @@ class _CompanySelectionState extends State<CompanySelection> {
                 ),
                 onTap: () async {
                   await companiesAdmin.updateSelectedWasteCompany(results.name);
+                  await companiesAdmin.updateCompanyId(results.id);
                   if (context.mounted) {
                     Navigator.pop(context);
                   }

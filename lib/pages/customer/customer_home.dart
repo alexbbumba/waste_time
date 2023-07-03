@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:waste_time/pages/customer/account.dart';
 import 'package:waste_time/pages/customer/schedule/maps_ui.dart';
 import 'package:waste_time/widgets/resuable_card.dart';
 import 'package:waste_time/widgets/reusable_card_content.dart';
+
+import 'chat.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -68,12 +71,10 @@ class _HomeState extends State<Home> {
                               label: 'Chat with us',
                             ),
                             action: () {
-                              // Navigator.of(context).pushAndRemoveUntil(
-                              //     MaterialPageRoute(
-                              //         builder: (context) => const DistrictsPage(
-                              //               screen: 'home',
-                              //             )),
-                              //     (route) => true);
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => const Chat()),
+                                  (route) => true);
                             },
                           ),
                         ),
@@ -109,11 +110,11 @@ class _HomeState extends State<Home> {
                               label: 'Account',
                             ),
                             action: () async {
-                              // Navigator.of(context).push(
-                              //   MaterialPageRoute(
-                              //       builder: (BuildContext context) =>
-                              //           const FarmerGrpMembers()),
-                              // );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        const CustomerAccount()),
+                              );
                             },
                           ),
                         )
