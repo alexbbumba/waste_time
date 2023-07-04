@@ -50,8 +50,16 @@ class ScheduleController extends GetxController {
 
   bool isComplete = false;
   // schdule waste pickup
-  scheduleWastePickup(String userId, String companyId, String domestic, plastic,
-      medical, industrial, double wasteWeight, String status) {
+  scheduleWastePickup(
+      BuildContext context,
+      String userId,
+      String companyId,
+      String domestic,
+      plastic,
+      medical,
+      industrial,
+      double wasteWeight,
+      String status) {
     // Create a CollectionReference called users that references the firestore collection
     CollectionReference pickups =
         FirebaseFirestore.instance.collection('schdules');
@@ -69,6 +77,8 @@ class ScheduleController extends GetxController {
     }).then((value) {
       debugPrint("Response from adding a schedule: $value");
       isComplete = true;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Schedule uploaded")));
       update();
     }).catchError((error) {
       debugPrint("Failed to add schedule: $error");

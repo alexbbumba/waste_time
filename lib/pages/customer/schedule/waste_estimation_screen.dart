@@ -162,6 +162,7 @@ class _WasteEstimationScreenState extends State<WasteEstimationScreen> {
                           onPressed: () async {
                             // submit button
                             await submitSchdule.scheduleWastePickup(
+                                context,
                                 user!.uid,
                                 submitSchdule.getCompanyId().toString(),
                                 domestic,

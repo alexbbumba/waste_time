@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waste_time/pages/customer/account.dart';
+import 'package:waste_time/pages/customer/recents.dart';
 import 'package:waste_time/pages/customer/schedule/maps_ui.dart';
 import 'package:waste_time/widgets/resuable_card.dart';
 import 'package:waste_time/widgets/reusable_card_content.dart';
@@ -95,11 +96,11 @@ class _HomeState extends State<Home> {
                               label: 'Recent Schedules',
                             ),
                             action: () async {
-                              // Navigator.of(context).push(
-                              //   MaterialPageRoute(
-                              //       builder: (BuildContext context) =>
-                              //           const GroupIndex()),
-                              // );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        const RecentSchedules()),
+                              );
                             },
                           ),
                         ),
