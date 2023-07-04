@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:waste_time/firebase_options.dart';
-import 'package:waste_time/pages/company/company.dart';
+import 'package:waste_time/pages/company/company_home.dart';
 import 'package:waste_time/pages/customer/customer.dart';
 import 'package:waste_time/pages/customer_company.dart';
 import 'package:firebase_auth/firebase_auth.dart';

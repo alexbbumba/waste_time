@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waste_time/globals.dart';
-import 'package:waste_time/pages/company/company.dart';
+import 'package:waste_time/pages/company/company_home.dart';
 import 'package:waste_time/pages/customer/customer.dart';
 
 class CustomerOrCompany extends StatefulWidget {
