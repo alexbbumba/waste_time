@@ -54,6 +54,8 @@ class ScheduleController extends GetxController {
       BuildContext context,
       String userId,
       String companyId,
+      double latitude,
+      double longitude,
       String domestic,
       plastic,
       medical,
@@ -62,10 +64,12 @@ class ScheduleController extends GetxController {
       String status) {
     // Create a CollectionReference called users that references the firestore collection
     CollectionReference pickups =
-        FirebaseFirestore.instance.collection('schdules');
+        FirebaseFirestore.instance.collection('customerSchedules');
     pickups.add({
       'userId': userId,
       'companyId': companyId,
+      'customerLatitude': latitude,
+      'customerLongitude': longitude,
       'wasteType': {
         'domestic': domestic,
         'plastic': plastic,

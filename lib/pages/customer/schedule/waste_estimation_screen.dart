@@ -8,12 +8,16 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:waste_time/controllers/schedule_controller.dart';
 
 class WasteEstimationScreen extends StatefulWidget {
+  final double latitude;
+  final double longitude;
   final bool isDomesticSelected;
   final bool isPlasticSelected;
   final bool isMedicalSelected;
   final bool isIndustrialSelected;
   const WasteEstimationScreen(
       {super.key,
+      required this.latitude,
+      required this.longitude,
       required this.isDomesticSelected,
       required this.isPlasticSelected,
       required this.isMedicalSelected,
@@ -88,6 +92,7 @@ class _WasteEstimationScreenState extends State<WasteEstimationScreen> {
   void initState() {
     super.initState();
     confirmWateTypes();
+    // get User latitude and longitude
   }
 
   confirmWateTypes() {
@@ -165,6 +170,8 @@ class _WasteEstimationScreenState extends State<WasteEstimationScreen> {
                                 context,
                                 user!.uid,
                                 submitSchdule.getCompanyId().toString(),
+                                widget.latitude,
+                                widget.longitude,
                                 domestic,
                                 plastic,
                                 medical,

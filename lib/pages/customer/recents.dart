@@ -54,7 +54,7 @@ class _RecentSchedulesState extends State<RecentSchedules> {
   Widget _buildScheduleList(String status) {
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore
-          .collection('schdules')
+          .collection('customerSchedules')
           .where('scheduleStatus', isEqualTo: status)
           .snapshots(),
       builder: (context, snapshot) {
@@ -78,6 +78,7 @@ class _RecentSchedulesState extends State<RecentSchedules> {
             final schedule = documents[index].data() as Map<String, dynamic>;
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+              margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                   color: Colors.blue[100],
                   borderRadius: const BorderRadius.only(
@@ -90,7 +91,10 @@ class _RecentSchedulesState extends State<RecentSchedules> {
                   Row(
                     children: [
                       const Text("Waste Type:  "),
-                      Text(schedule['wasteType']['domestic'])
+                      Text("${schedule['wasteType']['domestic']}  "),
+                      Text("${schedule['wasteType']['plastic']}  "),
+                      Text("${schedule['wasteType']['medical']}  "),
+                      Text("${schedule['wasteType']['industrial']} "),
                     ],
                   ),
                   Row(

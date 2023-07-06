@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:waste_time/pages/company/map_page.dart';
 
 class CompanyRecents extends StatefulWidget {
-  const CompanyRecents({super.key});
+  const CompanyRecents({Key? key}) : super(key: key);
 
   @override
   State<CompanyRecents> createState() => _CompanyRecentsState();
@@ -10,8 +11,27 @@ class CompanyRecents extends StatefulWidget {
 
 class _CompanyRecentsState extends State<CompanyRecents> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  // data['vehicleUserId'] ==
-  //                     FirebaseAuth.instance.currentUser!.uid
+
+  Future<String> getCustomerName(String id) async {
+    String customerName = '';
+
+    try {
+      final documentSnapshot =
+          await _firestore.collection('users').doc(id).get();
+      if (documentSnapshot.exists) {
+        var data = documentSnapshot.data();
+        String name = data![
+            'name']; // Assuming 'name' is the field name where the name is stored
+        customerName = name;
+        debugPrint('Name: $name');
+      }
+    } catch (e) {
+      debugPrint('Error getting customer name: $e');
+    }
+
+    return customerName;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,15 +76,15 @@ class _CompanyRecentsState extends State<CompanyRecents> {
   Widget _buildScheduleList(String status) {
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore
-          .collection('schdules')
+          .collection('customerSchedules')
           .where('scheduleStatus', isEqualTo: status)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+          return Text('Error: ${snapshot.error} ');
         }
 
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -78,61 +98,114 @@ class _CompanyRecentsState extends State<CompanyRecents> {
           itemCount: documents.length,
           itemBuilder: (context, index) {
             final schedule = documents[index].data() as Map<String, dynamic>;
-            return Container(
-              padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
-              decoration: BoxDecoration(
-                  color: Colors.blue[100],
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15),
-                      bottomLeft: Radius.circular(15),
-                      bottomRight: Radius.circular(15))),
-              child: Column(
-                children: [
-                  Row(
+            final id = documents[index].id;
+
+            return FutureBuilder<String>(
+              future: getCustomerName(schedule['userId']),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+
+                final customerName = snapshot.data ?? '';
+
+                return Container(
+                  margin: const EdgeInsets.all(10),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[100],
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                  ),
+                  child: Column(
                     children: [
-                      const Text("Waste Type:  "),
-                      Text(schedule['wasteType']['domestic'])
+                      Row(
+                        children: [
+                          const Text("Customer Name:  "),
+                          Text(customerName),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Text("Waste Type:  "),
+                          Text("${schedule['wasteType']['domestic']}  "),
+                          Text("${schedule['wasteType']['plastic']}  "),
+                          Text("${schedule['wasteType']['medical']}  "),
+                          Text("${schedule['wasteType']['industrial']} "),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Text("Waste Weight:  "),
+                          Text("${schedule['wasteWeight']}"),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Text("Status:  "),
+                          Text(schedule['scheduleStatus']),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // show pop up menu with accept and delcine
+                              showMenu(
+                                context: context,
+                                position:
+                                    const RelativeRect.fromLTRB(0, 0, 0, 0),
+                                items: [
+                                  const PopupMenuItem(
+                                    value: 'accept',
+                                    child: Text('Accept'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'decline',
+                                    child: Text('Decline'),
+                                  ),
+                                ],
+                              ).then((value) {
+                                if (value == 'accept') {
+                                  // Update the schedule status to "transition"
+                                  _firestore
+                                      .collection('customerSchedules')
+                                      .doc(id)
+                                      .update({'scheduleStatus': 'transition'});
+                                } else if (value == 'decline') {
+                                  // Handle decline action
+                                  Navigator.pop(context);
+                                }
+                              });
+                            },
+                            child: const Text("Actions"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              // move to screen with map
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                    builder: (context) => MapPage(
+                                          customerLatitude:
+                                              schedule['customerLatitude'],
+                                          customerLongitude:
+                                              schedule['customerLongitude'],
+                                        )),
+                              );
+                            },
+                            child: const Text("View on map"),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      const Text("Waste Weight:  "),
-                      Text("${schedule['wasteWeight']}")
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text("Status:  "),
-                      Text(schedule['scheduleStatus'])
-                    ],
-                  ),
-                  ElevatedButton(onPressed: () {
-                      CollectionReference pickups =
-        FirebaseFirestore.instance.collection('schdules');
-    pickups.add({
-      'userId': userId,
-      'companyId': companyId,
-      'wasteType': {
-        'domestic': domestic,
-        'plastic': plastic,
-        'medical': medical,
-        'industrial': industrial
-      },
-      'wasteWeight': wasteWeight,
-      'scheduleStatus': status
-    }).then((value) {
-      debugPrint("Response from adding a schedule: $value");
-      isComplete = true;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Schedule uploaded")));
-      update();
-    }).catchError((error) {
-      debugPrint("Failed to add schedule: $error");
-    });
-                  }, child: const Text("Accept"))
-                ],
-              ),
+                );
+              },
             );
           },
         );

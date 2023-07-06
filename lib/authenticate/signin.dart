@@ -60,7 +60,7 @@ class _SignInState extends State<SignIn> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(width: double.infinity, child: Text('welcome')),
+            const SizedBox(width: double.infinity, child: Text('welcome')),
             const SizedBox(
               height: 10,
             ),
@@ -304,13 +304,14 @@ class _SignInState extends State<SignIn> {
       // // SharedPreferenceHelper().saveProfileUrl(user);
       // SharedPreferenceHelper().saveUserName(basicInfo['name']);
       // SharedPreferenceHelper().saveAccountType(basicInfo['type']== 'doctor'? true :false);
-
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          '/decision', (Route<dynamic> route) => false);
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            '/decision', (Route<dynamic> route) => false);
+      }
     } catch (e) {
-      final snackBar = SnackBar(
+      const snackBar = SnackBar(
         content: Row(
-          children: const [
+          children: [
             Icon(
               Icons.info_outline,
               color: Colors.white,
@@ -319,8 +320,10 @@ class _SignInState extends State<SignIn> {
           ],
         ),
       );
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (context.mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
 

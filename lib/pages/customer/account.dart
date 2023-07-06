@@ -20,6 +20,7 @@ class _CustomerAccountState extends State<CustomerAccount> {
         title: const Text("Account"),
       ),
       body: ListView(
+        padding: const EdgeInsets.all(12),
         children: [
           SizedBox(
             height: size.height * 0.09,

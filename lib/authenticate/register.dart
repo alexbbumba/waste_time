@@ -274,7 +274,7 @@ class _RegisterState extends State<Register> {
                     },
                     style: ElevatedButton.styleFrom(
                         elevation: 2,
-                        primary: Colors.grey[350],
+                        backgroundColor: Colors.grey[350],
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(32.0),
                         ),
@@ -314,7 +314,7 @@ class _RegisterState extends State<Register> {
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 2,
-                      primary: Colors.grey[350],
+                      backgroundColor: Colors.grey[350],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32.0),
                       ),
@@ -351,9 +351,9 @@ class _RegisterState extends State<Register> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.indigo[900],
                     elevation: 2,
-                    primary: Colors.indigo[900],
-                    onPrimary: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(32.0),
                     ),
@@ -501,7 +501,7 @@ class _RegisterState extends State<Register> {
           0) {
         showAlertDialog(context);
       }
-      print(error.toString());
+      debugPrint(error.toString());
     }
     user = credential!.user;
 
@@ -520,7 +520,7 @@ class _RegisterState extends State<Register> {
         'email': user.email,
       }, SetOptions(merge: true));
 
-      // set data according to type (doctor or patient)
+      // set data according to type (company or customer)
       Map<String, dynamic> mp = {
         'id': user.uid,
         'type': accountType,
@@ -548,8 +548,10 @@ class _RegisterState extends State<Register> {
       // sep
       FirebaseFirestore.instance.collection(accountType).doc(user.uid).set(mp);
 
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          '/decision', (Route<dynamic> route) => false);
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            '/decision', (Route<dynamic> route) => false);
+      }
     } else {}
   }
 

@@ -299,6 +299,10 @@ class MapSampleState extends State<MapSample> {
                                     MaterialPageRoute<void>(
                                       builder: (BuildContext context) =>
                                           WasteEstimationScreen(
+                                              latitude:
+                                                  currentLocation.latitude,
+                                              longitude:
+                                                  currentLocation.longitude,
                                               isDomesticSelected:
                                                   scheduler.isDomesticSelected,
                                               isPlasticSelected:
