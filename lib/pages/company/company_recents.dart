@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waste_time/pages/company/map_page.dart';
 
@@ -78,6 +79,7 @@ class _CompanyRecentsState extends State<CompanyRecents> {
       stream: _firestore
           .collection('customerSchedules')
           .where('scheduleStatus', isEqualTo: status)
+          .where('companyId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -153,38 +155,79 @@ class _CompanyRecentsState extends State<CompanyRecents> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              // show pop up menu with accept and delcine
-                              showMenu(
-                                context: context,
-                                position:
-                                    const RelativeRect.fromLTRB(0, 0, 0, 0),
-                                items: [
-                                  const PopupMenuItem(
-                                    value: 'accept',
-                                    child: Text('Accept'),
-                                  ),
-                                  const PopupMenuItem(
-                                    value: 'decline',
-                                    child: Text('Decline'),
-                                  ),
-                                ],
-                              ).then((value) {
-                                if (value == 'accept') {
-                                  // Update the schedule status to "transition"
-                                  _firestore
-                                      .collection('customerSchedules')
-                                      .doc(id)
-                                      .update({'scheduleStatus': 'transition'});
-                                } else if (value == 'decline') {
-                                  // Handle decline action
-                                  Navigator.pop(context);
-                                }
-                              });
-                            },
-                            child: const Text("Actions"),
-                          ),
+                          schedule['scheduleStatus'] != 'finished'
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    // show pop up menu with accept and delcine
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text(
+                                              "Do you want to confirm this pickup ? "),
+                                          actions: [
+                                            SimpleDialogOption(
+                                              onPressed: () {
+                                                // Update the schedule status to "transition"
+                                                if (schedule[
+                                                        'scheduleStatus'] ==
+                                                    'incomplete') {
+                                                  _firestore
+                                                      .collection(
+                                                          'customerSchedules')
+                                                      .doc(id)
+                                                      .update({
+                                                    'scheduleStatus':
+                                                        'transition'
+                                                  });
+
+                                                  Navigator.pop(
+                                                      context); // Close the dialog
+                                                } else if (schedule[
+                                                        'scheduleStatus'] ==
+                                                    'transition') {
+                                                  _firestore
+                                                      .collection(
+                                                          'customerSchedules')
+                                                      .doc(id)
+                                                      .update({
+                                                    'scheduleStatus': 'finished'
+                                                  });
+
+                                                  Navigator.pop(
+                                                      context); // Close the dialog
+                                                }
+                                              },
+                                              child: const Text(
+                                                'Accept',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                            SimpleDialogOption(
+                                              onPressed: () {
+                                                // Handle decline action
+                                                Navigator.pop(
+                                                    context); // Close the dialog
+                                              },
+                                              child: const Text(
+                                                'Decline',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: const Text("Actions"),
+                                )
+                              : const SizedBox(),
                           ElevatedButton(
                             onPressed: () {
                               // move to screen with map

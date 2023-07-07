@@ -169,9 +169,7 @@ class _SignInState extends State<SignIn> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    elevation: 2,
-                    primary: Colors.indigo[900],
-                    onPrimary: Colors.black,
+                    foregroundColor: Colors.black, backgroundColor: Colors.indigo[900], elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(32.0),
                     ),

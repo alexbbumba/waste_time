@@ -46,6 +46,7 @@ dependencies:
   get: ^4.6.5
   sensors_plus: ^3.0.2
   http: ^1.1.0
+  fl_chart: ^0.63.0
   
 dev_dependencies:
   flutter_test:
