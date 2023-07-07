@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:waste_time/widgets/resuable_card.dart';
 import 'package:waste_time/widgets/reusable_card_content.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 import 'company_account.dart';
 import 'company_recents.dart';
@@ -121,25 +121,43 @@ class _MainCompanyState extends State<MainCompany> {
                 ],
               ),
               SizedBox(
-                height: size.height * 0.05,
+                height: size.height * 0.04,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  "Graphs to represent the number of pickups i.e incomplete, transition, finished",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ),
               ),
               SizedBox(
-                height: size.height * 0.2,
-                child: _data.isNotEmpty
-                    ? LineChart(
+                height: size.height * 2,
+                child: Column(
+                  children: [
+                    const Text('Incomplete'),
+                    Expanded(
+                      child: LineChart(
                         LineChartData(
                           lineBarsData: [
                             LineChartBarData(
                               spots: _data.map((schedule) {
-                                return FlSpot(
-                                  _data.indexOf(schedule).toDouble(),
-                                  schedule.count.toDouble(),
-                                );
+                                if (schedule.status == 'Incomplete') {
+                                  return FlSpot(
+                                    _data.indexOf(schedule).toDouble(),
+                                    schedule.count.toDouble(),
+                                  );
+                                } else {
+                                  return FlSpot(
+                                    _data.indexOf(schedule).toDouble(),
+                                    0,
+                                  );
+                                }
                               }).toList(),
                               isCurved: true,
                               color: Colors.blue,
                               barWidth: 2,
-                              dotData: FlDotData(show: true),
+                              dotData: const FlDotData(show: true),
                             ),
                           ],
                           minX: 0,
@@ -149,26 +167,147 @@ class _MainCompanyState extends State<MainCompany> {
                               .map((schedule) => schedule.count)
                               .reduce((a, b) => a > b ? a : b)
                               .toDouble(),
-                          titlesData: FlTitlesData(
-                            show: true,
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                // getTitles: (value) {
-                                //   int index = value.toInt();
-                                //   if (index >= 0 && index < _data.length) {
-                                //     return _data[index].status;
-                                //   }
-                                //   return '';
-                                // },
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: true)),
-                          ),
+                          // titlesData: FlTitlesData(
+                          //   show: true,
+                          //   bottomTitles: SideTitles(
+                          //     showTitles: true,
+                          //     getTitles: (value) {
+                          //       int index = value.toInt();
+                          //       if (index >= 0 && index < _data.length) {
+                          //         return _data[index].status;
+                          //       }
+                          //       return '';
+                          //     },
+                          //   ),
+                          //   leftTitles: SideTitles(
+                          //     showTitles: true,
+                          //     getTitles: (value) {
+                          //       if (value % 10 == 0) {
+                          //         return value.toInt().toString();
+                          //       }
+                          //       return '';
+                          //     },
+                          //   ),
+                          // ),
                         ),
-                      )
-                    : const CircularProgressIndicator(),
+                      ),
+                    ),
+                    const Text('Transition'),
+                    Expanded(
+                      child: LineChart(
+                        LineChartData(
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: _data.map((schedule) {
+                                if (schedule.status == 'Transition') {
+                                  return FlSpot(
+                                    _data.indexOf(schedule).toDouble(),
+                                    schedule.count.toDouble(),
+                                  );
+                                } else {
+                                  return FlSpot(
+                                    _data.indexOf(schedule).toDouble(),
+                                    0,
+                                  );
+                                }
+                              }).toList(),
+                              isCurved: true,
+                              color: Colors.red,
+                              barWidth: 2,
+                              dotData: const FlDotData(show: true),
+                            ),
+                          ],
+                          minX: 0,
+                          maxX: _data.length.toDouble() - 1,
+                          minY: 0,
+                          maxY: _data
+                              .map((schedule) => schedule.count)
+                              .reduce((a, b) => a > b ? a : b)
+                              .toDouble(),
+                          // titlesData: FlTitlesData(
+                          //   show: true,
+                          //   bottomTitles: SideTitles(
+                          //     showTitles: true,
+                          //     getTitles: (value) {
+                          //       int index = value.toInt();
+                          //       if (index >= 0 && index < _data.length) {
+                          //         return _data[index].status;
+                          //       }
+                          //       return '';
+                          //     },
+                          //   ),
+                          //   leftTitles: SideTitles(
+                          //     showTitles: true,
+                          //     getTitles: (value) {
+                          //       if (value % 10 == 0) {
+                          //         return value.toInt().toString();
+                          //       }
+                          //       return '';
+                          //     },
+                          //   ),
+                          // ),
+                        ),
+                      ),
+                    ),
+                    const Text('Finished'),
+                    Expanded(
+                      child: LineChart(
+                        LineChartData(
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: _data.map((schedule) {
+                                if (schedule.status == 'Finished') {
+                                  return FlSpot(
+                                    _data.indexOf(schedule).toDouble(),
+                                    schedule.count.toDouble(),
+                                  );
+                                } else {
+                                  return FlSpot(
+                                    _data.indexOf(schedule).toDouble(),
+                                    0,
+                                  );
+                                }
+                              }).toList(),
+                              isCurved: true,
+                              color: Colors.green,
+                              barWidth: 2,
+                              dotData: const FlDotData(show: true),
+                            ),
+                          ],
+                          minX: 0,
+                          maxX: _data.length.toDouble() - 1,
+                          minY: 0,
+                          maxY: _data
+                              .map((schedule) => schedule.count)
+                              .reduce((a, b) => a > b ? a : b)
+                              .toDouble(),
+                          // titlesData: FlTitlesData(
+                          //   show: true,
+                          //   bottomTitles: SideTitles(
+                          //     showTitles: true,
+                          //     getTitles: (value) {
+                          //       int index = value.toInt();
+                          //       if (index >= 0 && index < _data.length) {
+                          //         return _data[index].status;
+                          //       }
+                          //       return '';
+                          //     },
+                          //   ),
+                          //   leftTitles: SideTitles(
+                          //     showTitles: true,
+                          //     getTitles: (value) {
+                          //       if (value % 10 == 0) {
+                          //         return value.toInt().toString();
+                          //       }
+                          //       return '';
+                          //     },
+                          //   ),
+                          // ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
