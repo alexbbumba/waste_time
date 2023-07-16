@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waste_time/pages/customer/payments_page.dart';
 
 class RecentSchedules extends StatefulWidget {
   const RecentSchedules({super.key});
@@ -52,10 +54,12 @@ class _RecentSchedulesState extends State<RecentSchedules> {
   }
 
   Widget _buildScheduleList(String status) {
+    final currentUser = FirebaseAuth.instance.currentUser;
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore
           .collection('customerSchedules')
           .where('scheduleStatus', isEqualTo: status)
+          .where('userId', isEqualTo: currentUser!.uid)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -76,6 +80,7 @@ class _RecentSchedulesState extends State<RecentSchedules> {
           itemCount: documents.length,
           itemBuilder: (context, index) {
             final schedule = documents[index].data() as Map<String, dynamic>;
+            final bool isFinished = status == 'finished';
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
               margin: const EdgeInsets.all(10),
@@ -99,7 +104,7 @@ class _RecentSchedulesState extends State<RecentSchedules> {
                   ),
                   Row(
                     children: [
-                      const Text("Waste Weight:  "),
+                      const Text("Waste Weight Range:  "),
                       Text("${schedule['wasteWeight']}")
                     ],
                   ),
@@ -109,6 +114,22 @@ class _RecentSchedulesState extends State<RecentSchedules> {
                       Text(schedule['scheduleStatus'])
                     ],
                   ),
+                  if (isFinished) // Render button only if status is 'finished'
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle button click
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WebPage(
+                              url:
+                                  'https://silicon-pay.com/payModal/S64b41dfe79a960.54919524',
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text('Make Payment'),
+                    ),
                 ],
               ),
             );

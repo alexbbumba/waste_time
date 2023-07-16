@@ -125,20 +125,34 @@ class _MainCompanyState extends State<MainCompany> {
               ),
               const Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Text(
-                  "Graphs to represent the number of pickups i.e incomplete, transition, finished",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
+                child: Center(
+                  child: Text(
+                    "Graphs to represent the number of pickups i.e incomplete, transition, finished",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               SizedBox(
-                height: size.height * 2,
+                height: size.height * 3,
                 child: Column(
                   children: [
-                    const Text('Incomplete'),
+                    const Text(
+                      'Incomplete Pickups linegraph',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold),
+                    ),
                     Expanded(
                       child: LineChart(
                         LineChartData(
+                          lineTouchData: const LineTouchData(
+                              enabled: false), // Disable touch interactions
+                          gridData:
+                              const FlGridData(show: false), // Hide grid lines
                           lineBarsData: [
                             LineChartBarData(
                               spots: _data.map((schedule) {
@@ -154,48 +168,50 @@ class _MainCompanyState extends State<MainCompany> {
                                   );
                                 }
                               }).toList(),
-                              isCurved: true,
                               color: Colors.blue,
-                              barWidth: 2,
-                              dotData: const FlDotData(show: true),
+                              isStepLineChart: false,
+                              barWidth: 3,
                             ),
                           ],
-                          minX: 0,
-                          maxX: _data.length.toDouble() - 1,
+
                           minY: 0,
-                          maxY: _data
-                              .map((schedule) => schedule.count)
-                              .reduce((a, b) => a > b ? a : b)
-                              .toDouble(),
-                          // titlesData: FlTitlesData(
-                          //   show: true,
-                          //   bottomTitles: SideTitles(
-                          //     showTitles: true,
-                          //     getTitles: (value) {
-                          //       int index = value.toInt();
-                          //       if (index >= 0 && index < _data.length) {
-                          //         return _data[index].status;
-                          //       }
-                          //       return '';
-                          //     },
-                          //   ),
-                          //   leftTitles: SideTitles(
-                          //     showTitles: true,
-                          //     getTitles: (value) {
-                          //       if (value % 10 == 0) {
-                          //         return value.toInt().toString();
-                          //       }
-                          //       return '';
-                          //     },
-                          //   ),
-                          // ),
+                          maxY: _data.length.toDouble(),
+                          titlesData: const FlTitlesData(
+                            show: true,
+                            rightTitles: AxisTitles(
+                              axisNameWidget: Text(
+                                "Number of incomplete pickups",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    reservedSize: 30, showTitles: false)),
+                            topTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    reservedSize: 30, showTitles: false)),
+                          ),
                         ),
                       ),
                     ),
-                    const Text('Transition'),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    const Text(
+                      'Transition Pickups linegraph',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold),
+                    ),
                     Expanded(
                       child: LineChart(
                         LineChartData(
+                          gridData:
+                              const FlGridData(show: false), // Hide grid lines
                           lineBarsData: [
                             LineChartBarData(
                               spots: _data.map((schedule) {
@@ -211,48 +227,49 @@ class _MainCompanyState extends State<MainCompany> {
                                   );
                                 }
                               }).toList(),
-                              isCurved: true,
+                              isStepLineChart: true,
                               color: Colors.red,
-                              barWidth: 2,
-                              dotData: const FlDotData(show: true),
+                              barWidth: 3,
                             ),
                           ],
-                          minX: 0,
-                          maxX: _data.length.toDouble() - 1,
                           minY: 0,
-                          maxY: _data
-                              .map((schedule) => schedule.count)
-                              .reduce((a, b) => a > b ? a : b)
-                              .toDouble(),
-                          // titlesData: FlTitlesData(
-                          //   show: true,
-                          //   bottomTitles: SideTitles(
-                          //     showTitles: true,
-                          //     getTitles: (value) {
-                          //       int index = value.toInt();
-                          //       if (index >= 0 && index < _data.length) {
-                          //         return _data[index].status;
-                          //       }
-                          //       return '';
-                          //     },
-                          //   ),
-                          //   leftTitles: SideTitles(
-                          //     showTitles: true,
-                          //     getTitles: (value) {
-                          //       if (value % 10 == 0) {
-                          //         return value.toInt().toString();
-                          //       }
-                          //       return '';
-                          //     },
-                          //   ),
-                          // ),
+                          maxY: _data.length.toDouble(),
+                          titlesData: const FlTitlesData(
+                            show: true,
+                            rightTitles: AxisTitles(
+                              axisNameWidget: Text(
+                                "Number of in_transition pickups",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    reservedSize: 30, showTitles: false)),
+                            topTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    reservedSize: 30, showTitles: false)),
+                          ),
                         ),
                       ),
                     ),
-                    const Text('Finished'),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    const Text(
+                      'Finished Pickups linegraph',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold),
+                    ),
                     Expanded(
                       child: LineChart(
                         LineChartData(
+                          gridData:
+                              const FlGridData(show: false), // Hide grid lines
                           lineBarsData: [
                             LineChartBarData(
                               spots: _data.map((schedule) {
@@ -268,43 +285,36 @@ class _MainCompanyState extends State<MainCompany> {
                                   );
                                 }
                               }).toList(),
-                              isCurved: true,
+                              isStepLineChart: true,
                               color: Colors.green,
                               barWidth: 2,
-                              dotData: const FlDotData(show: true),
                             ),
                           ],
-                          minX: 0,
-                          maxX: _data.length.toDouble() - 1,
                           minY: 0,
-                          maxY: _data
-                              .map((schedule) => schedule.count)
-                              .reduce((a, b) => a > b ? a : b)
-                              .toDouble(),
-                          // titlesData: FlTitlesData(
-                          //   show: true,
-                          //   bottomTitles: SideTitles(
-                          //     showTitles: true,
-                          //     getTitles: (value) {
-                          //       int index = value.toInt();
-                          //       if (index >= 0 && index < _data.length) {
-                          //         return _data[index].status;
-                          //       }
-                          //       return '';
-                          //     },
-                          //   ),
-                          //   leftTitles: SideTitles(
-                          //     showTitles: true,
-                          //     getTitles: (value) {
-                          //       if (value % 10 == 0) {
-                          //         return value.toInt().toString();
-                          //       }
-                          //       return '';
-                          //     },
-                          //   ),
-                          // ),
+                          maxY: _data.length.toDouble(),
+                          titlesData: const FlTitlesData(
+                            show: true,
+                            rightTitles: AxisTitles(
+                              axisNameWidget: Text(
+                                "Number of finished pickups",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    reservedSize: 30, showTitles: false)),
+                            topTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                    reservedSize: 30, showTitles: false)),
+                          ),
                         ),
                       ),
+                    ),
+                    const SizedBox(
+                      height: 100,
                     ),
                   ],
                 ),

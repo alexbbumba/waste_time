@@ -45,8 +45,10 @@ dependencies:
   google_fonts: ^4.0.3
   get: ^4.6.5
   sensors_plus: ^3.0.2
-  http: ^1.1.0
+  http: 
   fl_chart: ^0.63.0
+  flutter_polyline_points: ^1.0.0
+  webview_flutter: ^4.2.2
   
 dev_dependencies:
   flutter_test:

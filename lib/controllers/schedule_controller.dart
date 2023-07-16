@@ -49,6 +49,16 @@ class ScheduleController extends GetxController {
   bool isIndustrialSelected = false;
 
   bool isComplete = false;
+
+  changeBoloean(bool value) {
+    isComplete = value;
+    update();
+  }
+
+  bool getBoolean() {
+    return isComplete;
+  }
+
   // schdule waste pickup
   scheduleWastePickup(
       BuildContext context,
@@ -60,7 +70,7 @@ class ScheduleController extends GetxController {
       plastic,
       medical,
       industrial,
-      double wasteWeight,
+      String wasteWeight,
       String status) {
     // Create a CollectionReference called users that references the firestore collection
     CollectionReference pickups =
@@ -80,7 +90,7 @@ class ScheduleController extends GetxController {
       'scheduleStatus': status
     }).then((value) {
       debugPrint("Response from adding a schedule: $value");
-      isComplete = true;
+      changeBoloean(false);
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Schedule uploaded")));
       update();

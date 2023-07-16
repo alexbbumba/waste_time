@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:waste_time/controllers/notify_controller.dart';
 import 'package:waste_time/pages/company/map_page.dart';
 
 class CompanyRecents extends StatefulWidget {
@@ -142,7 +143,7 @@ class _CompanyRecentsState extends State<CompanyRecents> {
                       ),
                       Row(
                         children: [
-                          const Text("Waste Weight:  "),
+                          const Text("Waste Weight Range:  "),
                           Text("${schedule['wasteWeight']}"),
                         ],
                       ),
@@ -163,11 +164,16 @@ class _CompanyRecentsState extends State<CompanyRecents> {
                                       context: context,
                                       builder: (context) {
                                         return AlertDialog(
-                                          title: const Text(
-                                              "Do you want to confirm this pickup ? "),
+                                          title: Text(
+                                            // "Do you want to confirm this pickup ? "
+                                            schedule['scheduleStatus'] ==
+                                                    'transition'
+                                                ? 'Is the pickup still on-going? '
+                                                : 'Do you want to confirm this pickup ?',
+                                          ),
                                           actions: [
                                             SimpleDialogOption(
-                                              onPressed: () {
+                                              onPressed: () async {
                                                 // Update the schedule status to "transition"
                                                 if (schedule[
                                                         'scheduleStatus'] ==
@@ -180,9 +186,16 @@ class _CompanyRecentsState extends State<CompanyRecents> {
                                                     'scheduleStatus':
                                                         'transition'
                                                   });
-
-                                                  Navigator.pop(
-                                                      context); // Close the dialog
+                                                  await notifyManager
+                                                      .notifyCustomer(
+                                                          context,
+                                                          schedule['userId'],
+                                                          schedule['companyId'],
+                                                          "Congratulatons!! Your pickup was confirmed and we are on the way to collect it.");
+                                                  if (context.mounted) {
+                                                    Navigator.pop(
+                                                        context); // Close the dialog
+                                                  }
                                                 } else if (schedule[
                                                         'scheduleStatus'] ==
                                                     'transition') {
@@ -194,27 +207,46 @@ class _CompanyRecentsState extends State<CompanyRecents> {
                                                     'scheduleStatus': 'finished'
                                                   });
 
-                                                  Navigator.pop(
-                                                      context); // Close the dialog
+                                                  await notifyManager
+                                                      .notifyCustomer(
+                                                          context,
+                                                          schedule['userId'],
+                                                          schedule['companyId'],
+                                                          "Congratulatons!! Your pickup has been collected.");
+                                                  if (context.mounted) {
+                                                    Navigator.pop(
+                                                        context); // Close the dialog
+                                                  }
                                                 }
                                               },
-                                              child: const Text(
-                                                'Accept',
-                                                style: TextStyle(
+                                              child: Text(
+                                                schedule['scheduleStatus'] ==
+                                                        'transition'
+                                                    ? 'Consider Complete'
+                                                    : 'Accept',
+                                                style: const TextStyle(
                                                     fontSize: 20,
+                                                    color: Colors.blue,
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
                                             ),
                                             SimpleDialogOption(
-                                              onPressed: () {
-                                                // Handle decline action
-                                                Navigator.pop(
-                                                    context); // Close the dialog
+                                              onPressed: () async {
+                                                await notifyManager.notifyCustomer(
+                                                    context,
+                                                    schedule['userId'],
+                                                    schedule['companyId'],
+                                                    "Your pickup was decline.  Try again with a different company please.");
+                                                if (context.mounted) {
+                                                  Navigator.pop(
+                                                      context); // Close the dialog
+                                                }
                                               },
                                               child: const Text(
                                                 'Decline',
                                                 style: TextStyle(
+                                                    color: Colors.red,
                                                     fontSize: 20,
                                                     fontWeight:
                                                         FontWeight.bold),

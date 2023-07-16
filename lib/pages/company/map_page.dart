@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -17,11 +18,16 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   // ignore: unused_field
   GoogleMapController? _mapController;
-  final List<LatLng> _polylineCoordinates = [];
 
   LatLng _startCoordinates = const LatLng(0, 0); // User's current location
   LatLng _destinationCoordinates =
       const LatLng(0, 0); // Destination coordinates from Firebase
+
+  PolylinePoints polylinePoints = PolylinePoints();
+
+  String googleAPiKey = "AIzaSyCN36hKY6ze8vC3QpCQWV8qpQ1zLHoAQs0";
+
+  Map<PolylineId, Polyline> polylines = {};
 
   @override
   void initState() {
@@ -45,18 +51,43 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
-    // Draw polyline on the map
-    _drawPolyline();
+  // void _onMapCreated(GoogleMapController controller) {
+  //   _mapController = controller;
+  //   // Draw polyline on the map
+  // }
+
+  getDirections() async {
+    List<LatLng> polylineCoordinates = [];
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      googleAPiKey,
+      PointLatLng(_startCoordinates.latitude, _startCoordinates.longitude),
+      PointLatLng(
+          _destinationCoordinates.latitude, _destinationCoordinates.longitude),
+      travelMode: TravelMode.driving,
+    );
+    debugPrint("polyline result${result.toString()}");
+
+    if (result.points.isNotEmpty) {
+      for (var point in result.points) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      }
+    } else {
+      debugPrint(result.errorMessage);
+    }
+    addPolyLine(polylineCoordinates);
   }
 
-  void _drawPolyline() {
-    setState(() {
-      _polylineCoordinates.clear();
-      _polylineCoordinates.add(_startCoordinates);
-      _polylineCoordinates.add(_destinationCoordinates);
-    });
+  addPolyLine(List<LatLng> polylineCoordinates) {
+    PolylineId id = const PolylineId("poly");
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.deepPurpleAccent,
+      points: polylineCoordinates,
+      width: 8,
+    );
+    polylines[id] = polyline;
+    setState(() {});
   }
 
   @override
@@ -67,18 +98,17 @@ class _MapPageState extends State<MapPage> {
         title: const Text('Map Route'),
       ),
       body: GoogleMap(
-        onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
           target: _startCoordinates,
           zoom: 12,
         ),
-        polylines: {
-          Polyline(
-            polylineId: const PolylineId('polyline'),
-            points: _polylineCoordinates,
-            color: Colors.blue,
-            width: 3,
-          ),
+        polylines: Set<Polyline>.of(polylines.values), //polylines
+        mapType: MapType.normal, //map type
+        onMapCreated: (controller) {
+          //method called when map is created
+          setState(() {
+            _mapController = controller;
+          });
         },
       ),
     );

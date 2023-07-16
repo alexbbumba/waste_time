@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waste_time/pages/customer/account.dart';
+import 'package:waste_time/pages/customer/notifications_page.dart';
 import 'package:waste_time/pages/customer/recents.dart';
 import 'package:waste_time/pages/customer/schedule/maps_ui.dart';
 import 'package:waste_time/widgets/resuable_card.dart';
 import 'package:waste_time/widgets/reusable_card_content.dart';
 
-import 'chat.dart';
+import 'chatbot_service/chat.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -69,7 +70,7 @@ class _HomeState extends State<Home> {
                           child: ReusableCard(
                             cardChild: const ReusableCardContent(
                               imageLink: "assets/images/chat.png",
-                              label: 'Chat with us',
+                              label: 'ChatBot',
                             ),
                             action: () {
                               Navigator.of(context).pushAndRemoveUntil(
@@ -119,6 +120,31 @@ class _HomeState extends State<Home> {
                             },
                           ),
                         )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ReusableCard(
+                            cardChild: const ReusableCardContent(
+                              imageLink: "assets/images/notifications.png",
+                              label: 'Notifications',
+                            ),
+                            action: () async {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        const CustomerNotifications()),
+                              );
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
