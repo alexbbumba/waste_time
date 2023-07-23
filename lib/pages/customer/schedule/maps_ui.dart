@@ -54,14 +54,18 @@ class MapSampleState extends State<MapSample> {
     for (CompanyInfor company in widget.companies) {
       setState(() {
         marks.add(Marker(
-          markerId: MarkerId(company.id),
-          position:
-              LatLng(company.location.latitude, company.location.longitude),
-          icon: BitmapDescriptor.fromBytes(markIcons),
-          infoWindow: InfoWindow(
-            title: company.name,
-          ),
-        ));
+            markerId: MarkerId(company.id),
+            position:
+                LatLng(company.location.latitude, company.location.longitude),
+            icon: BitmapDescriptor.fromBytes(markIcons),
+            infoWindow: InfoWindow(
+              title: company.name,
+            ),
+            onTap: () async {
+              appCtr.setSelectedCompany = company;
+              await sheduleContrler.updateSelectedWasteCompany(company.name);
+              await sheduleContrler.updateCompanyId(company.id);
+            }));
       });
     }
     print('Done!!!!!!!!!!!!!!!!!!!!!!!!!!');
