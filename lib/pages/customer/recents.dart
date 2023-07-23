@@ -124,8 +124,6 @@ class _RecentSchedulesState extends State<RecentSchedules> {
                             children: [
                               TextButton(
                                   onPressed: () {
-                                    print('ttttttttttttttttttttttttttttt');
-
                                     appCtr.updateRecordStatus(
                                         documents[index], 'canceled');
                                   },
@@ -133,12 +131,6 @@ class _RecentSchedulesState extends State<RecentSchedules> {
                               const SizedBox(
                                 width: 20,
                               ),
-                              TextButton(
-                                  onPressed: () {
-                                    appCtr.updateRecordStatus(
-                                        documents[index], 'finished');
-                                  },
-                                  child: const Text('Finish activity'))
                             ],
                           )
                         : const SizedBox(),

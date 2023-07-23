@@ -41,8 +41,10 @@ class _RegisterLocationView extends State<RegisterLocationView> {
     }
 
     // GoogleMapController ctr = await googleMapController.future;
-    ctr.animateCamera(
+    await ctr.animateCamera(
+        //Todo: tobe uncommented
         CameraUpdate.newLatLng(LatLng(pos.latitude, pos.longitude)));
+    // CameraUpdate.newLatLng(LatLng(0.321, 32.5714)));
 
     setState(() {
       mrks.add(Marker(
@@ -89,6 +91,8 @@ class _RegisterLocationView extends State<RegisterLocationView> {
                   ),
                   floatingActionButton: ElevatedButton(
                     onPressed: () async {
+                      print('mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm');
+                      print(mrks);
                       Navigator.pop(context, mrks.last);
                     },
                     style: ElevatedButton.styleFrom(

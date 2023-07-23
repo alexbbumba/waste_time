@@ -12,30 +12,6 @@ class Sample extends StatefulWidget {
 }
 
 class _Sample extends State<Sample> {
-  // List data = [
-  //   {'no': 2, 'date': '2023-07-22 11:45:36.769097'},
-  //   {
-  //     'no': 3,
-  //     'date': '2023-07-22 11:45:05.938679',
-  //   },
-  //   {
-  //     'no': 4,
-  //     'date': '2023-07-22 12:47:10.670396',
-  //   },
-  //   {
-  //     'no': 5,
-  //     'date': '2023-07-22 12:49:10.670396',
-  //   },
-  //   {'no': 6, 'date': '2023-07-22 11:48:36.773880'},
-  //   {'no': 3, 'date': '2023-07-22 13:48:36.773880'},
-  //   {'no': 9, 'date': '2023-07-22 13:49:36.773880'},
-  //   {'no': 9, 'date': '2023-07-22 14:49:36.773880'},
-  //   {'no': 9, 'date': '2023-07-22 15:49:36.773880'},
-  //   {'no': 9, 'date': '2023-07-22 15:49:36.773880'},
-  //   {'no': 9, 'date': '2023-07-22 15:49:36.773880'},
-  //   {'no': 9, 'date': '2023-07-22 16:49:36.773880'},
-  // ];
-
   List todayList = [];
   List weekList = [];
 
@@ -43,7 +19,6 @@ class _Sample extends State<Sample> {
   void initState() {
     touchedValue = -1;
     organiseToday();
-    print('rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
     print(widget.data);
     activeList = todayList;
 
@@ -104,6 +79,16 @@ class _Sample extends State<Sample> {
   Widget build(BuildContext context) {
     double ovWidth = MediaQuery.of(context).size.width;
     double ovHeight = MediaQuery.of(context).size.height;
+    print('QQQQQQQQQQQQQQQQQQQQQQQQQQQQ');
+
+    print(DateFormat.E().format(DateTime.now()));
+
+    final date = DateTime.parse('2023-07-19 15:43:03.887');
+
+    print('Date: $date');
+    print('Start of week: ${date.subtract(Duration(days: date.weekday - 1))}');
+    print(
+        'End of week: ${date.add(Duration(days: DateTime.daysPerWeek - date.weekday))}');
 
     return results.isNotEmpty
         ? Container(

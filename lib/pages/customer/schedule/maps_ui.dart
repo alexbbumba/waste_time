@@ -36,6 +36,28 @@ class MapSampleState extends State<MapSample> {
   final sheduleContrler = Get.put(ScheduleController());
   List<ShortestModel> companyDist = [];
 
+  @override
+  void initState() {
+    super.initState();
+
+    if (appCtr.pos.value != null) {
+      moveCamera(appCtr.pos.value);
+      organiseCompanyLocations();
+      calculateShortestDistance();
+    }
+
+    appCtr.pos.listen((position) {
+      if (position != null) {
+        print('oo333333333333333333333333333333333333333');
+      }
+    });
+
+    // organiseUserLocation();
+
+    // fetch available companies
+    // getCompanies();
+  }
+
   Future<Uint8List> getImages() async {
     String path = 'assets/images/bin.png';
     ByteData data = await rootBundle.load(path);
@@ -89,28 +111,6 @@ class MapSampleState extends State<MapSample> {
   }
 
   var lines;
-  @override
-  void initState() {
-    super.initState();
-    print('oooooooooooooooooooooooooooooooooo');
-    print(widget.companies);
-
-    if (appCtr.pos.value != null) {
-      organiseCompanyLocations();
-      calculateShortestDistance();
-    }
-
-    appCtr.pos.listen((position) {
-      if (position != null) {
-        print('oo333333333333333333333333333333333333333');
-      }
-    });
-
-    // organiseUserLocation();
-
-    // fetch available companies
-    // getCompanies();
-  }
 
   calculateShortestDistance() async {
     for (CompanyInfor company in widget.companies) {
@@ -134,7 +134,6 @@ class MapSampleState extends State<MapSample> {
   }
 
   computePath() async {
-    print('ooooooooooooooooooooooo');
     GoogleMapPolyline googleMapPolyline =
         GoogleMapPolyline(apiKey: "AIzaSyCN36hKY6ze8vC3QpCQWV8qpQ1zLHoAQs0");
 
@@ -149,20 +148,25 @@ class MapSampleState extends State<MapSample> {
     setState(() {});
   }
 
-  // organiseUserLocation() async {
-  //   currentLocation = await determinePosition();
-  //   print('llllllllllllllllllllllllllllllll');
-  //   setState(() {});
-  //   moveCamera(currentLocation);
-  // }
+  organiseUserLocation() async {
+    // moveCamera(currentLocation);
+  }
 
   getCompanies() async {
     await schedulerManager.showCompanies();
   }
 
-  moveCamera(Position? position) async {
+  moveCamera(
+    Position? position,
+  ) async {
     final GoogleMapController controller = await googleMapController.future;
-    controller.animateCamera(
+    // if (forced) {
+    //   print('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
+    //   await controller
+    //       .animateCamera(CameraUpdate.newLatLng(LatLng(0.321, 32.5714)));
+    //   return;
+    // }
+    await controller.animateCamera(
         CameraUpdate.newLatLng(LatLng(position!.latitude, position.longitude)));
   }
 

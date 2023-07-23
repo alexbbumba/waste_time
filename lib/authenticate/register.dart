@@ -611,7 +611,7 @@ class _RegisterState extends State<Register> {
           'specialization': 'general',
           'location': companyLocation != null
               ? GeoPoint(companyLocation!.position.latitude,
-                  companyLocation!.position.latitude)
+                  companyLocation!.position.longitude)
               : const GeoPoint(0, 0)
         });
         globals.isCompany = true;

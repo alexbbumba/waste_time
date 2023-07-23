@@ -19,6 +19,7 @@ class MainAppController extends GetxController {
   loadUserLocation() async {
     setLoadingStatus(true);
     pos.value = await determinePosition();
+    print(pos.value);
     setLoadingStatus(false);
   }
 
