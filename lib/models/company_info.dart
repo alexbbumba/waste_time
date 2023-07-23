@@ -15,6 +15,7 @@ class CompanyInfor {
   final dynamic rating;
   final dynamic specification;
   final String specialization;
+  final GeoPoint location;
 
   CompanyInfor(
       {required this.id,
@@ -30,7 +31,8 @@ class CompanyInfor {
       this.rating,
       required this.specialization,
       this.specification,
-      required this.type});
+      required this.type,
+      required this.location});
 
   Map<String, dynamic> toMap() {
     return {
@@ -47,24 +49,25 @@ class CompanyInfor {
       "openHour": openHour,
       "closeHour": closeHour,
       "specification": specification,
-      "specialization": specialization
+      "specialization": specialization,
+      'location': location
     };
   }
 
-  CompanyInfor.fromDocumentSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot)
-      : id = documentSnapshot.data()!["id"],
-        name = documentSnapshot.data()!["name"],
-        type = documentSnapshot.data()!["type"],
-        email = documentSnapshot.data()!["email"],
-        birthDate = documentSnapshot.data()!["birthDate"],
-        phone = documentSnapshot.data()!["phone"],
-        rating = documentSnapshot.data()!["rating"],
-        bio = documentSnapshot.data()!["bio"],
-        address = documentSnapshot.data()!["address"],
-        profilePhoto = documentSnapshot.data()!["profilePhoto"],
-        openHour = documentSnapshot.data()!["openHour"],
-        closeHour = documentSnapshot.data()!["closeHour"],
-        specification = documentSnapshot.data()!["specification"],
-        specialization = documentSnapshot.data()!["specialization"];
+  CompanyInfor.fromDocumentSnapshot(Map<String, dynamic> documentSnapshot)
+      : id = documentSnapshot["id"],
+        name = documentSnapshot["name"],
+        type = documentSnapshot["type"],
+        email = documentSnapshot["email"],
+        birthDate = documentSnapshot["birthDate"],
+        phone = documentSnapshot["phone"],
+        rating = documentSnapshot["rating"],
+        bio = documentSnapshot["bio"],
+        address = documentSnapshot["address"],
+        profilePhoto = documentSnapshot["profilePhoto"],
+        openHour = documentSnapshot["openHour"],
+        closeHour = documentSnapshot["closeHour"],
+        specification = documentSnapshot["specification"],
+        specialization = documentSnapshot["specialization"],
+        location = documentSnapshot["location"];
 }

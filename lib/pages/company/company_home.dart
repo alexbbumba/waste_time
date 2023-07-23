@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:waste_time/models/scheduleModel.dart';
 import 'package:waste_time/widgets/resuable_card.dart';
 import 'package:waste_time/widgets/reusable_card_content.dart';
 
+import '../../widgets/graphwidget.dart';
 import 'company_account.dart';
 import 'company_recents.dart';
 
@@ -17,6 +19,7 @@ class MainCompany extends StatefulWidget {
 
 class _MainCompanyState extends State<MainCompany> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<ScheduleCount> _data = [];
 
@@ -136,7 +139,7 @@ class _MainCompanyState extends State<MainCompany> {
                 ),
               ),
               SizedBox(
-                height: size.height * 3,
+                height: size.height * 0.5 * 3,
                 child: Column(
                   children: [
                     const Text(
@@ -147,58 +150,34 @@ class _MainCompanyState extends State<MainCompany> {
                           fontWeight: FontWeight.bold),
                     ),
                     Expanded(
-                      child: LineChart(
-                        LineChartData(
-                          lineTouchData: const LineTouchData(
-                              enabled: false), // Disable touch interactions
-                          gridData:
-                              const FlGridData(show: false), // Hide grid lines
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: _data.map((schedule) {
-                                if (schedule.status == 'Incomplete') {
-                                  return FlSpot(
-                                    _data.indexOf(schedule).toDouble(),
-                                    schedule.count.toDouble(),
-                                  );
-                                } else {
-                                  return FlSpot(
-                                    _data.indexOf(schedule).toDouble(),
-                                    0,
-                                  );
-                                }
-                              }).toList(),
-                              color: Colors.blue,
-                              isStepLineChart: false,
-                              barWidth: 3,
-                            ),
-                          ],
+                      child: StreamBuilder(
+                          stream: _firestore
+                              .collection('customerSchedules')
+                              .where('scheduleStatus', isEqualTo: 'incomplete')
+                              .where('companyId',
+                                  isEqualTo:
+                                      FirebaseAuth.instance.currentUser!.uid)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            List<ScheduleModel> content = [];
+                            if (snapshot.hasData) {
+                              // print(snapshot.data!.docs[0].data());
+                              content.addAll(snapshot.data!.docs.map((e) {
+                                return ScheduleModel.fromFireBase(e.data());
+                              }).toList());
 
-                          minY: 0,
-                          maxY: _data.length.toDouble(),
-                          titlesData: const FlTitlesData(
-                            show: true,
-                            rightTitles: AxisTitles(
-                              axisNameWidget: Text(
-                                "Number of incomplete pickups",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    reservedSize: 30, showTitles: false)),
-                            topTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    reservedSize: 30, showTitles: false)),
-                          ),
-                        ),
-                      ),
+                              print('ddddddddddddddddddddddd');
+                              print(content);
+
+                              return Sample(
+                                data: content,
+                              );
+                            }
+                            return const SizedBox();
+                          }),
                     ),
                     const SizedBox(
-                      height: 60,
+                      height: 40,
                     ),
                     const Text(
                       'Transition Pickups linegraph',
@@ -208,55 +187,33 @@ class _MainCompanyState extends State<MainCompany> {
                           fontWeight: FontWeight.bold),
                     ),
                     Expanded(
-                      child: LineChart(
-                        LineChartData(
-                          gridData:
-                              const FlGridData(show: false), // Hide grid lines
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: _data.map((schedule) {
-                                if (schedule.status == 'Transition') {
-                                  return FlSpot(
-                                    _data.indexOf(schedule).toDouble(),
-                                    schedule.count.toDouble(),
-                                  );
-                                } else {
-                                  return FlSpot(
-                                    _data.indexOf(schedule).toDouble(),
-                                    0,
-                                  );
-                                }
-                              }).toList(),
-                              isStepLineChart: true,
-                              color: Colors.red,
-                              barWidth: 3,
-                            ),
-                          ],
-                          minY: 0,
-                          maxY: _data.length.toDouble(),
-                          titlesData: const FlTitlesData(
-                            show: true,
-                            rightTitles: AxisTitles(
-                              axisNameWidget: Text(
-                                "Number of in_transition pickups",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    reservedSize: 30, showTitles: false)),
-                            topTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    reservedSize: 30, showTitles: false)),
-                          ),
-                        ),
-                      ),
+                      child: StreamBuilder(
+                          stream: _firestore
+                              .collection('customerSchedules')
+                              .where('scheduleStatus', isEqualTo: 'transition')
+                              .where('companyId',
+                                  isEqualTo:
+                                      FirebaseAuth.instance.currentUser!.uid)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            List<ScheduleModel> content = [];
+                            if (snapshot.hasData) {
+                              // print(snapshot.data!.docs[0].data());
+                              content.addAll(snapshot.data!.docs.map((e) {
+                                return ScheduleModel.fromFireBase(e.data());
+                              }).toList());
+
+                              if (content.isNotEmpty) {
+                                return Sample(
+                                  data: content,
+                                );
+                              }
+                            }
+                            return const SizedBox();
+                          }),
                     ),
                     const SizedBox(
-                      height: 60,
+                      height: 20,
                     ),
                     const Text(
                       'Finished Pickups linegraph',
@@ -266,52 +223,26 @@ class _MainCompanyState extends State<MainCompany> {
                           fontWeight: FontWeight.bold),
                     ),
                     Expanded(
-                      child: LineChart(
-                        LineChartData(
-                          gridData:
-                              const FlGridData(show: false), // Hide grid lines
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: _data.map((schedule) {
-                                if (schedule.status == 'Finished') {
-                                  return FlSpot(
-                                    _data.indexOf(schedule).toDouble(),
-                                    schedule.count.toDouble(),
-                                  );
-                                } else {
-                                  return FlSpot(
-                                    _data.indexOf(schedule).toDouble(),
-                                    0,
-                                  );
-                                }
-                              }).toList(),
-                              isStepLineChart: true,
-                              color: Colors.green,
-                              barWidth: 2,
-                            ),
-                          ],
-                          minY: 0,
-                          maxY: _data.length.toDouble(),
-                          titlesData: const FlTitlesData(
-                            show: true,
-                            rightTitles: AxisTitles(
-                              axisNameWidget: Text(
-                                "Number of finished pickups",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    reservedSize: 30, showTitles: false)),
-                            topTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                    reservedSize: 30, showTitles: false)),
-                          ),
-                        ),
-                      ),
+                      child: StreamBuilder(
+                          stream: _firestore
+                              .collection('customerSchedules')
+                              .where('scheduleStatus', isEqualTo: 'finished')
+                              .where('companyId',
+                                  isEqualTo:
+                                      FirebaseAuth.instance.currentUser!.uid)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            List<ScheduleModel> content = [];
+                            if (snapshot.hasData) {
+                              // print(snapshot.data!.docs[0].data());
+                              content = snapshot.data!.docs.map((e) {
+                                return ScheduleModel.fromFireBase(e.data());
+                              }).toList();
+                            }
+                            return Sample(
+                              data: content,
+                            );
+                          }),
                     ),
                     const SizedBox(
                       height: 100,

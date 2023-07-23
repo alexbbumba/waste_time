@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waste_time/pages/customer/account.dart';
@@ -7,6 +8,7 @@ import 'package:waste_time/pages/customer/schedule/maps_ui.dart';
 import 'package:waste_time/widgets/resuable_card.dart';
 import 'package:waste_time/widgets/reusable_card_content.dart';
 
+import '../../models/company_info.dart';
 import 'chatbot_service/chat.dart';
 
 class Home extends StatefulWidget {
@@ -19,8 +21,19 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  List<CompanyInfor> apiCompanies = [];
+
+  getFire() async {
+    var snap = await FirebaseFirestore.instance.collection('company').get();
+
+    apiCompanies.addAll((snap.docs)
+        .map((doc) => CompanyInfor.fromDocumentSnapshot(doc.data()))
+        .toList());
+  }
+
   @override
   Widget build(BuildContext context) {
+    getFire();
     return Scaffold(
         backgroundColor: Colors.white,
         extendBody: true,
@@ -61,7 +74,9 @@ class _HomeState extends State<Home> {
                             action: () {
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
-                                      builder: (context) => const MapSample()),
+                                      builder: (context) => MapSample(
+                                            companies: apiCompanies,
+                                          )),
                                   (route) => true);
                             },
                           ),

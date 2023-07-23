@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:waste_time/controllers/mainController.dart';
 import 'package:waste_time/pages/customer/payments_page.dart';
 
 class RecentSchedules extends StatefulWidget {
@@ -12,6 +14,8 @@ class RecentSchedules extends StatefulWidget {
 
 class _RecentSchedulesState extends State<RecentSchedules> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final appCtr = Get.find<MainAppController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +86,6 @@ class _RecentSchedulesState extends State<RecentSchedules> {
             final schedule = documents[index].data() as Map<String, dynamic>;
             final bool isFinished = status == 'finished';
             return Container(
-              padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
               margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                   color: Colors.blue[100],
@@ -91,46 +94,75 @@ class _RecentSchedulesState extends State<RecentSchedules> {
                       topRight: Radius.circular(15),
                       bottomLeft: Radius.circular(15),
                       bottomRight: Radius.circular(15))),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      const Text("Waste Type:  "),
-                      Text("${schedule['wasteType']['domestic']}  "),
-                      Text("${schedule['wasteType']['plastic']}  "),
-                      Text("${schedule['wasteType']['medical']}  "),
-                      Text("${schedule['wasteType']['industrial']} "),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text("Waste Weight Range:  "),
-                      Text("${schedule['wasteWeight']}")
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const Text("Status:  "),
-                      Text(schedule['scheduleStatus'])
-                    ],
-                  ),
-                  if (isFinished) // Render button only if status is 'finished'
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle button click
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const WebPage(
-                              url:
-                                  'https://silicon-pay.com/payModal/S64b41dfe79a960.54919524',
-                            ),
-                          ),
-                        );
-                      },
-                      child: const Text('Make Payment'),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0, top: 10),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Text("Waste Type:  "),
+                        Text("${schedule['wasteType']['domestic']}  "),
+                        Text("${schedule['wasteType']['plastic']}  "),
+                        Text("${schedule['wasteType']['medical']}  "),
+                        Text("${schedule['wasteType']['industrial']} "),
+                      ],
                     ),
-                ],
+                    Row(
+                      children: [
+                        const Text("Waste Weight Range:  "),
+                        Text("${schedule['wasteWeight']}")
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Text("Status:  "),
+                        Text(schedule['scheduleStatus'])
+                      ],
+                    ),
+                    !isFinished
+                        ? Row(
+                            children: [
+                              TextButton(
+                                  onPressed: () {
+                                    print('ttttttttttttttttttttttttttttt');
+
+                                    appCtr.updateRecordStatus(
+                                        documents[index], 'canceled');
+                                  },
+                                  child: const Text('Cancel order')),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    appCtr.updateRecordStatus(
+                                        documents[index], 'finished');
+                                  },
+                                  child: const Text('Finish activity'))
+                            ],
+                          )
+                        : const SizedBox(),
+                    if (isFinished) // Render button only if status is 'finished'
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Handle button click
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const WebPage(
+                                  url:
+                                      'https://silicon-pay.com/payModal/S64b41dfe79a960.54919524',
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('Make Payment'),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             );
           },

@@ -17,7 +17,7 @@ class ScheduleController extends GetxController {
     QuerySnapshot<Map<String, dynamic>> snapshot =
         await firestore.collection('company').get();
     return snapshot.docs
-        .map((e) => CompanyInfor.fromDocumentSnapshot(e))
+        .map((e) => CompanyInfor.fromDocumentSnapshot(e.data()))
         .toList();
   }
 
@@ -71,31 +71,39 @@ class ScheduleController extends GetxController {
       medical,
       industrial,
       String wasteWeight,
-      String status) {
+      String status) async {
     // Create a CollectionReference called users that references the firestore collection
     CollectionReference pickups =
         FirebaseFirestore.instance.collection('customerSchedules');
-    pickups.add({
-      'userId': userId,
-      'companyId': companyId,
-      'customerLatitude': latitude,
-      'customerLongitude': longitude,
-      'wasteType': {
-        'domestic': domestic,
-        'plastic': plastic,
-        'medical': medical,
-        'industrial': industrial
-      },
-      'wasteWeight': wasteWeight,
-      'scheduleStatus': status
-    }).then((value) {
+
+    try {
+      var value = await pickups.add({
+        'userId': userId,
+        'companyId': companyId,
+        'creationDate': DateTime.now().toString(),
+        'customerLatitude': latitude,
+        'customerLongitude': longitude,
+        'wasteType': {
+          'domestic': domestic,
+          'plastic': plastic,
+          'medical': medical,
+          'industrial': industrial
+        },
+        'wasteWeight': wasteWeight,
+        'scheduleStatus': status
+      });
+
       debugPrint("Response from adding a schedule: $value");
       changeBoloean(false);
+
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Schedule uploaded")));
+      await Future.delayed(Duration(seconds: 2));
+      Navigator.pop(context);
+      Navigator.pop(context);
       update();
-    }).catchError((error) {
-      debugPrint("Failed to add schedule: $error");
-    });
+    } catch (e) {
+      debugPrint("Failed to add schedule: $e");
+    }
   }
 }

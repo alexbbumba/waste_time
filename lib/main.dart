@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:waste_time/controllers/mainController.dart';
 import 'package:waste_time/firebase_options.dart';
 import 'package:waste_time/pages/company/company_home.dart';
 import 'package:waste_time/pages/customer/customer.dart';
@@ -8,9 +10,11 @@ import 'package:waste_time/pages/customer_company.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:waste_time/pages/wrapper.dart';
 import 'package:waste_time/globals.dart';
+import 'package:waste_time/widgets/graphwidget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  var appCntrler = Get.put(MainAppController());
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SystemChrome.setPreferredOrientations(
     [
@@ -35,7 +39,7 @@ class _MyAppState extends State<MyApp> {
   User? user;
 
   Future<void> _getUser() async {
-    user = _auth.currentUser!;
+    user = _auth.currentUser;
   }
 
   @override
@@ -58,6 +62,7 @@ class _MyAppState extends State<MyApp> {
             user == null ? const Wrapper() : const CustomerOrCompany(),
         '/decision': (context) =>
             isCompany ? const MainCompany() : const MainCustomer(),
+        // 'sample': (context) => Sample()
       },
       debugShowCheckedModeBanner: false,
     );

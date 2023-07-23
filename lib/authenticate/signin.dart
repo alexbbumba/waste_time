@@ -169,7 +169,9 @@ class _SignInState extends State<SignIn> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black, backgroundColor: Colors.indigo[900], elevation: 2,
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.indigo[900],
+                    elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(32.0),
                     ),
@@ -307,7 +309,7 @@ class _SignInState extends State<SignIn> {
             '/decision', (Route<dynamic> route) => false);
       }
     } catch (e) {
-      const snackBar = SnackBar(
+      var snackBar = SnackBar(
         content: Row(
           children: [
             Icon(

@@ -1,18 +1,27 @@
 import 'dart:async';
-
+import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_map_polyline_new/google_map_polyline_new.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:waste_time/controllers/schedule_controller.dart';
+import 'package:waste_time/models/shortestModel.dart';
 import 'package:waste_time/pages/customer/schedule/company_selection.dart';
 import 'package:waste_time/pages/customer/schedule/waste_estimation_screen.dart';
 import 'package:waste_time/widgets/input_field_withouticon.dart';
+
+import '../../../controllers/mainController.dart';
+import '../../../models/company_info.dart';
+import '../../../util.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MapSample extends StatefulWidget {
-  const MapSample({Key? key}) : super(key: key);
+  MapSample({required this.companies, Key? key}) : super(key: key);
+  List<CompanyInfor> companies;
 
   @override
   State<MapSample> createState() => MapSampleState();
@@ -22,64 +31,138 @@ class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> googleMapController =
       Completer<GoogleMapController>();
 
-  Position currentLocation = Position(
-      longitude: 0.0,
-      latitude: 0.0,
-      timestamp: DateTime.timestamp(),
-      accuracy: 0.0,
-      altitude: 0.0,
-      heading: 0.0,
-      speed: 0.0,
-      speedAccuracy: 0.0);
+  Set<Marker> marks = {};
+  final appCtr = Get.find<MainAppController>();
+  final sheduleContrler = Get.put(ScheduleController());
+  List<ShortestModel> companyDist = [];
 
-  Future<Position> determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location Services are Disabled');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission == await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location Permission Denied');
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error('Location permission denied permanently');
-    }
-    Position position = await Geolocator.getCurrentPosition(
-        forceAndroidLocationManager: true,
-        desiredAccuracy: LocationAccuracy.high);
-    return position;
+  Future<Uint8List> getImages() async {
+    String path = 'assets/images/bin.png';
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetHeight: 120);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
+  organiseCompanyLocations() async {
+    Uint8List markIcons = await getImages();
+    print('iiiiiiiiiiiiiiiiiiiiiiiiii');
+
+    for (CompanyInfor company in widget.companies) {
+      setState(() {
+        marks.add(Marker(
+          markerId: MarkerId(company.id),
+          position:
+              LatLng(company.location.latitude, company.location.longitude),
+          icon: BitmapDescriptor.fromBytes(markIcons),
+          infoWindow: InfoWindow(
+            title: company.name,
+          ),
+        ));
+      });
+    }
+    print('Done!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  }
+
+  double calculateDistance(
+    LatLng one,
+  ) {
+    print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+    print('Lat: ${one.latitude} Long: ${one.longitude} ');
+
+    LatLng two =
+        LatLng(appCtr.pos.value!.latitude, appCtr.pos.value!.longitude);
+    var dd = Geolocator.distanceBetween(
+        one.latitude, one.longitude, two.latitude, two.longitude);
+    return dd;
+  }
+
+  double deg2rad(deg) {
+    return deg * (pi / 180);
+  }
+
+  var lines;
   @override
   void initState() {
     super.initState();
-    determinePosition().then((userlocation) {
-      setState(() {
-        currentLocation = userlocation;
-      });
-      moveCamera(currentLocation);
+    print('oooooooooooooooooooooooooooooooooo');
+    print(widget.companies);
+
+    if (appCtr.pos.value != null) {
+      organiseCompanyLocations();
+      calculateShortestDistance();
+    }
+
+    appCtr.pos.listen((position) {
+      if (position != null) {
+        print('oo333333333333333333333333333333333333333');
+      }
     });
 
+    // organiseUserLocation();
+
     // fetch available companies
-    getCompanies();
+    // getCompanies();
   }
+
+  calculateShortestDistance() async {
+    for (CompanyInfor company in widget.companies) {
+      companyDist.add(ShortestModel(
+          company: company,
+          distance: calculateDistance(
+              LatLng(company.location.latitude, company.location.latitude))));
+    }
+
+    print('ddddddddddddddddddddddddddd');
+    print(companyDist);
+    companyDist.sort((a, b) => (b.distance).compareTo(a.distance));
+    print(companyDist);
+    // print(distances.sort((a, b){});?
+    // distances.last; -> the shortest
+    ShortestModel shortestDist = companyDist.last;
+    print(shortestDist);
+    appCtr.setSelectedCompany = shortestDist.company;
+    await sheduleContrler.updateSelectedWasteCompany(shortestDist.company.name);
+    await sheduleContrler.updateCompanyId(shortestDist.company.id);
+  }
+
+  computePath() async {
+    print('ooooooooooooooooooooooo');
+    GoogleMapPolyline googleMapPolyline =
+        GoogleMapPolyline(apiKey: "AIzaSyCN36hKY6ze8vC3QpCQWV8qpQ1zLHoAQs0");
+
+    lines = await googleMapPolyline.getCoordinatesWithLocation(
+        origin: const LatLng(0.3619747744049111, 32.64982994645834),
+        destination: LatLng(
+          appCtr.pos.value!.latitude,
+          appCtr.pos.value!.longitude,
+        ),
+        mode: RouteMode.driving);
+    print(lines);
+    setState(() {});
+  }
+
+  // organiseUserLocation() async {
+  //   currentLocation = await determinePosition();
+  //   print('llllllllllllllllllllllllllllllll');
+  //   setState(() {});
+  //   moveCamera(currentLocation);
+  // }
 
   getCompanies() async {
     await schedulerManager.showCompanies();
   }
 
-  moveCamera(Position position) async {
+  moveCamera(Position? position) async {
     final GoogleMapController controller = await googleMapController.future;
     controller.animateCamera(
-        CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
+        CameraUpdate.newLatLng(LatLng(position!.latitude, position.longitude)));
   }
+
+  Set<Marker> mrks = {};
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +208,15 @@ class MapSampleState extends State<MapSample> {
               onMapCreated: (GoogleMapController controller) {
                 googleMapController.complete(controller);
               },
+              onTap: (a) {
+                print(a);
+
+                setState(() {
+                  mrks.add(Marker(markerId: const MarkerId('er'), position: a));
+                });
+              },
+              markers: marks,
+              // polylines: Set.from(lines),
             ),
             bottomNavigationBar: Container(
               height: size.height * 0.45,
@@ -138,23 +230,53 @@ class MapSampleState extends State<MapSample> {
                 child: Column(
                   children: [
                     const Text(
-                      "Select type of waste Company",
+                      "Nearest waste Company",
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    InputFieldWithoutIcon(
-                      controller: scheduler.wasteCompanyController,
-                      labelText: "Select Waste Company",
-                      x: true,
-                      tap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CompanySelection(
-                                  companies: scheduler.companies),
-                            ));
-                      },
+
+                    const SizedBox(
+                      height: 20,
                     ),
+
+                    Obx(() {
+                      return appCtr.selectedCompany.value != null
+                          ? Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: Container(
+                                height: 54,
+                                width: size.width - 40,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    // color: Colors.red,
+                                    border: Border.all(
+                                        width: 0.5, color: Colors.black)),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      appCtr.selectedCompany.value!.name,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox();
+                    }),
+                    // InputFieldWithoutIcon(
+                    //   controller: scheduler.wasteCompanyController,
+                    //   labelText: "Select Waste Company",
+                    //   x: true,
+                    //   tap: () {
+                    //     Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //           builder: (context) => CompanySelection(
+                    //               companies: scheduler.companies),
+                    //         ));
+                    //   },
+                    // ),
 
                     // choose the waste type
                     scheduler.wasteCompanyController.text.isNotEmpty
@@ -294,24 +416,20 @@ class MapSampleState extends State<MapSample> {
                                   scheduler.isMedicalSelected == true ||
                                   scheduler.isIndustrialSelected == true) {
                                 // move to screen for calculating the watse weight
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute<void>(
-                                      builder: (BuildContext context) =>
-                                          WasteEstimationScreen(
-                                              latitude:
-                                                  currentLocation.latitude,
-                                              longitude:
-                                                  currentLocation.longitude,
-                                              isDomesticSelected:
-                                                  scheduler.isDomesticSelected,
-                                              isPlasticSelected:
-                                                  scheduler.isPlasticSelected,
-                                              isMedicalSelected:
-                                                  scheduler.isMedicalSelected,
-                                              isIndustrialSelected: scheduler
-                                                  .isIndustrialSelected),
-                                    ));
+                                Navigator.push(context, MaterialPageRoute<void>(
+                                    builder: (BuildContext context) {
+                                  return WasteEstimationScreen(
+                                      latitude: appCtr.pos.value!.latitude,
+                                      longitude: appCtr.pos.value!.longitude,
+                                      isDomesticSelected:
+                                          scheduler.isDomesticSelected,
+                                      isPlasticSelected:
+                                          scheduler.isPlasticSelected,
+                                      isMedicalSelected:
+                                          scheduler.isMedicalSelected,
+                                      isIndustrialSelected:
+                                          scheduler.isIndustrialSelected);
+                                }));
                               } else {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(const SnackBar(

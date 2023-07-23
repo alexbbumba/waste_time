@@ -1,4 +1,7 @@
 import 'dart:math';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:waste_time/authenticate/registerLocation.dart';
 import 'package:waste_time/globals.dart' as globals;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:waste_time/authenticate/signin.dart';
+
+import '../util.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -24,11 +29,24 @@ class _RegisterState extends State<Register> {
       TextEditingController();
 
   int type = -1;
+  bool isCompany = false;
 
   FocusNode f1 = FocusNode();
   FocusNode f2 = FocusNode();
   FocusNode f3 = FocusNode();
   FocusNode f4 = FocusNode();
+  Position? currentPostion;
+  Marker? companyLocation;
+
+  @override
+  void initState() {
+    loadCurrentLocation();
+    super.initState();
+  }
+
+  loadCurrentLocation() async {
+    currentPostion = await determinePosition();
+  }
 
   @override
   void dispose() {
@@ -73,7 +91,7 @@ class _RegisterState extends State<Register> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(
-              height: 20,
+              height: 15,
             ),
             Container(
               padding: const EdgeInsets.only(bottom: 50),
@@ -166,7 +184,7 @@ class _RegisterState extends State<Register> {
               },
             ),
             const SizedBox(
-              height: 25.0,
+              height: 20.0,
             ),
 
             // password
@@ -213,7 +231,7 @@ class _RegisterState extends State<Register> {
               obscureText: true,
             ),
             const SizedBox(
-              height: 25.0,
+              height: 20.0,
             ),
 
             // confirm password
@@ -270,6 +288,7 @@ class _RegisterState extends State<Register> {
                     onPressed: () {
                       setState(() {
                         type = 0;
+                        isCompany = true;
                       });
                     },
                     style: ElevatedButton.styleFrom(
@@ -310,6 +329,7 @@ class _RegisterState extends State<Register> {
                     onPressed: () {
                       setState(() {
                         type = 1;
+                        isCompany = false;
                       });
                     },
                     style: ElevatedButton.styleFrom(
@@ -336,6 +356,54 @@ class _RegisterState extends State<Register> {
                 ),
               ],
             ),
+            SizedBox(
+              height: isCompany ? 20 : 0,
+            ),
+            isCompany
+                ? SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        companyLocation = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RegisterLocationView(
+                                      location: currentPostion,
+                                    )));
+
+                        if (companyLocation != null) {
+                          setState(() {});
+                        }
+
+                        print(companyLocation);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          elevation: 2,
+                          backgroundColor: Colors.grey[350],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                          side: BorderSide(
+                            width: 5.0,
+                            color: Colors.black38,
+                            style: type == 0
+                                ? BorderStyle.solid
+                                : BorderStyle.none,
+                          )),
+                      child: Text(
+                        "Choose Company Location",
+                        style: GoogleFonts.lato(
+                          color: companyLocation != null
+                              ? Colors.black38
+                              : Colors.white,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
 
             // signin button
             Container(
@@ -541,12 +609,19 @@ class _RegisterState extends State<Register> {
               (3 + Random().nextDouble() * 1.9).toStringAsPrecision(2)),
           'specification': null,
           'specialization': 'general',
+          'location': companyLocation != null
+              ? GeoPoint(companyLocation!.position.latitude,
+                  companyLocation!.position.latitude)
+              : const GeoPoint(0, 0)
         });
         globals.isCompany = true;
       }
 
       // sep
-      FirebaseFirestore.instance.collection(accountType).doc(user.uid).set(mp);
+      await FirebaseFirestore.instance
+          .collection(accountType)
+          .doc(user.uid)
+          .set(mp);
 
       if (context.mounted) {
         Navigator.of(context).pushNamedAndRemoveUntil(
