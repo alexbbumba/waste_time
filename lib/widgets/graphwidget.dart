@@ -38,27 +38,26 @@ class _Sample extends State<Sample> {
 
   organiseToday() {
     DateTime today = DateTime.now();
+    DateTime weekStart = today.subtract(Duration(days: today.weekday - 1));
 
     for (ScheduleModel rec in widget.data) {
       DateTime someDay = DateTime.parse(rec.dateCreated);
-      print('sssssssssssssssssssssssssssssss');
-      print(rec.dateCreated);
+      // get the start of the week, look at the month, make sure the month is higher then that is that
+      // week or greater or equal to that month and the days greater or equal to that day
+      // print(rec.dateCreated);
 
-      if (someDay.day == today.day &&
-          someDay.month == today.month &&
-          someDay.year == today.year) {
+      if (someDay.month >= weekStart.month && someDay.year == weekStart.year) {
         // DateFormat.jm().format(someDay);
-        String key = DateFormat.j().format(someDay);
-        print('oooooooooooooooooooooooooooo');
+        DateFormat.E().format(someDay);
+        String key = DateFormat.E().format(someDay);
+
         if (hourly.containsKey(key)) {
           int count = hourly[key]!;
           count = count + 1;
           hourly[key] = count;
         } else {
-          print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&');
           hourly[key] = 1;
-          print('hhhhhhhhhhhhhhhhhhhhhh');
-          print(hourly);
+
           Map<String, int> tmp = {};
           tmp[key] = 1;
           results.add(tmp);
@@ -79,16 +78,6 @@ class _Sample extends State<Sample> {
   Widget build(BuildContext context) {
     double ovWidth = MediaQuery.of(context).size.width;
     double ovHeight = MediaQuery.of(context).size.height;
-    print('QQQQQQQQQQQQQQQQQQQQQQQQQQQQ');
-
-    print(DateFormat.E().format(DateTime.now()));
-
-    final date = DateTime.parse('2023-07-19 15:43:03.887');
-
-    print('Date: $date');
-    print('Start of week: ${date.subtract(Duration(days: date.weekday - 1))}');
-    print(
-        'End of week: ${date.add(Duration(days: DateTime.daysPerWeek - date.weekday))}');
 
     return results.isNotEmpty
         ? Container(
@@ -209,23 +198,7 @@ class _Sample extends State<Sample> {
       color: Colors.black,
       fontSize: 10,
     );
-    String text;
-    switch (value.toInt()) {
-      case 0:
-        text = '';
-        break;
-      case 1:
-        text = '1';
-        break;
-      case 2:
-        text = '2';
-        break;
-      case 3:
-        text = '3';
-        break;
-      default:
-        return Container();
-    }
+    String text = value.toInt().toString();
 
     return SideTitleWidget(
       axisSide: meta.axisSide,

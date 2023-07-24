@@ -31,7 +31,7 @@ class _MainCompanyState extends State<MainCompany> {
 
   void _generateData() async {
     int incompleteCount = 0;
-    int transitionCount = 0;
+    int canceledCount = 0;
     int finishedCount = 0;
 
     QuerySnapshot snapshot =
@@ -43,8 +43,8 @@ class _MainCompanyState extends State<MainCompany> {
 
       if (status == 'incomplete') {
         incompleteCount++;
-      } else if (status == 'transition') {
-        transitionCount++;
+      } else if (status == 'canceled') {
+        canceledCount++;
       } else if (status == 'finished') {
         finishedCount++;
       }
@@ -53,7 +53,7 @@ class _MainCompanyState extends State<MainCompany> {
     setState(() {
       _data = [
         ScheduleCount('Incomplete', incompleteCount),
-        ScheduleCount('Transition', transitionCount),
+        ScheduleCount('Canceled', canceledCount),
         ScheduleCount('Finished', finishedCount),
       ];
     });
@@ -130,7 +130,7 @@ class _MainCompanyState extends State<MainCompany> {
                 padding: EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    "Graphs to represent the number of pickups i.e incomplete, transition, finished",
+                    "Graphs to represent the number of pickups i.e incomplete, canceled, finished",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 14,
@@ -180,7 +180,7 @@ class _MainCompanyState extends State<MainCompany> {
                       height: 40,
                     ),
                     const Text(
-                      'Transition Pickups linegraph',
+                      'Canceled Pickups linegraph',
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 17,
@@ -190,7 +190,7 @@ class _MainCompanyState extends State<MainCompany> {
                       child: StreamBuilder(
                           stream: _firestore
                               .collection('customerSchedules')
-                              .where('scheduleStatus', isEqualTo: 'transition')
+                              .where('scheduleStatus', isEqualTo: 'canceled')
                               .where('companyId',
                                   isEqualTo:
                                       FirebaseAuth.instance.currentUser!.uid)
