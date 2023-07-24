@@ -375,8 +375,6 @@ class _RegisterState extends State<Register> {
                         if (companyLocation != null) {
                           setState(() {});
                         }
-
-                        print(companyLocation);
                       },
                       style: ElevatedButton.styleFrom(
                           elevation: 2,

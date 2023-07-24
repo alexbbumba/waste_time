@@ -41,8 +41,6 @@ class _Sample extends State<Sample> {
   organiseToday() {
     DateTime today = DateTime.now();
     DateTime weekStart = today.subtract(Duration(days: today.weekday - 1));
-    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-    print(weekStart);
 
     for (ScheduleModel rec in widget.data) {
       DateTime someDay = DateTime.parse(rec.dateCreated);
@@ -191,8 +189,6 @@ class _Sample extends State<Sample> {
           : SideTitleFitInsideData.disable(),
       child: InkWell(
         onTap: () {
-          print('pppppppppppppppppppppppppppppp');
-
           String key = results[value.toInt()].keys.first;
 
           Navigator.push(

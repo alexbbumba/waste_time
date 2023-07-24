@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:waste_time/models/scheduleModel.dart';
+import 'package:waste_time/pages/company/company_reports.dart';
 import 'package:waste_time/widgets/resuable_card.dart';
 import 'package:waste_time/widgets/reusable_card_content.dart';
 
@@ -122,6 +123,36 @@ class _MainCompanyState extends State<MainCompany> {
                       ],
                     ),
                   ),
+                ],
+              ),
+              // SizedBox(
+              //   height: size.height * 0.04,
+              // ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ReusableCard(
+                            cardChild: const ReusableCardContent(
+                              imageLink: "assets/images/reports.png",
+                              label: 'Reports',
+                            ),
+                            action: () async {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      ReportsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Spacer()
                 ],
               ),
               SizedBox(
