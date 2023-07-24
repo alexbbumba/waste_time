@@ -24,7 +24,6 @@ class MainAppController extends GetxController {
   }
 
   updateRecordStatus(var d, String newStatus) async {
-    print('dddddddddddddddd');
     print(d.id);
 
     var data = d.data();

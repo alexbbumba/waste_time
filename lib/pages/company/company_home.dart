@@ -9,6 +9,7 @@ import 'package:waste_time/widgets/reusable_card_content.dart';
 import '../../widgets/graphwidget.dart';
 import 'company_account.dart';
 import 'company_recents.dart';
+import 'graphdetail.dart';
 
 class MainCompany extends StatefulWidget {
   const MainCompany({Key? key}) : super(key: key);
@@ -165,10 +166,6 @@ class _MainCompanyState extends State<MainCompany> {
                               content.addAll(snapshot.data!.docs.map((e) {
                                 return ScheduleModel.fromFireBase(e.data());
                               }).toList());
-
-                              print('ddddddddddddddddddddddd');
-                              print(content);
-
                               return Sample(
                                 data: content,
                               );
@@ -235,13 +232,15 @@ class _MainCompanyState extends State<MainCompany> {
                             List<ScheduleModel> content = [];
                             if (snapshot.hasData) {
                               // print(snapshot.data!.docs[0].data());
+
                               content = snapshot.data!.docs.map((e) {
                                 return ScheduleModel.fromFireBase(e.data());
                               }).toList();
+                              return Sample(
+                                data: content,
+                              );
                             }
-                            return Sample(
-                              data: content,
-                            );
+                            return const SizedBox();
                           }),
                     ),
                     const SizedBox(

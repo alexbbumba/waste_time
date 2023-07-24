@@ -91,8 +91,6 @@ class _RegisterLocationView extends State<RegisterLocationView> {
                   ),
                   floatingActionButton: ElevatedButton(
                     onPressed: () async {
-                      print('mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm');
-                      print(mrks);
                       Navigator.pop(context, mrks.last);
                     },
                     style: ElevatedButton.styleFrom(

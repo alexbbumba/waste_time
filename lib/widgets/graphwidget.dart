@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:waste_time/models/scheduleModel.dart';
+import 'package:waste_time/pages/company/graphdetail.dart';
 
 class Sample extends StatefulWidget {
   List<ScheduleModel> data;
@@ -34,11 +35,14 @@ class _Sample extends State<Sample> {
   //   }
   // }
   Map<String, int> hourly = {};
+  Map<String, List<ScheduleModel>> schedulesPerDay = {};
   List results = [];
 
   organiseToday() {
     DateTime today = DateTime.now();
     DateTime weekStart = today.subtract(Duration(days: today.weekday - 1));
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+    print(weekStart);
 
     for (ScheduleModel rec in widget.data) {
       DateTime someDay = DateTime.parse(rec.dateCreated);
@@ -55,18 +59,20 @@ class _Sample extends State<Sample> {
           int count = hourly[key]!;
           count = count + 1;
           hourly[key] = count;
+          schedulesPerDay[key]!.add(rec);
         } else {
           hourly[key] = 1;
-
           Map<String, int> tmp = {};
           tmp[key] = 1;
           results.add(tmp);
+          schedulesPerDay[key] = [
+            rec,
+          ];
         }
         // todayList.add(rec);
       }
     }
     setState(() {});
-    print('999999999999999999999999');
     print(todayList);
     print(hourly);
     print(results);
@@ -183,9 +189,23 @@ class _Sample extends State<Sample> {
       fitInside: fitInsideBottomTitle
           ? SideTitleFitInsideData.fromTitleMeta(meta, distanceFromEdge: 0)
           : SideTitleFitInsideData.disable(),
-      child: Text(
-        results[value.toInt()].keys.first,
-        style: style,
+      child: InkWell(
+        onTap: () {
+          print('pppppppppppppppppppppppppppppp');
+
+          String key = results[value.toInt()].keys.first;
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => GraphDetailScreen(
+                        schedules: schedulesPerDay[key]!,
+                      )));
+        },
+        child: Text(
+          results[value.toInt()].keys.first,
+          style: style,
+        ),
       ),
     );
   }

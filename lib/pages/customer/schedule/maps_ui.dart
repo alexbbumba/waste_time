@@ -48,7 +48,7 @@ class MapSampleState extends State<MapSample> {
 
     appCtr.pos.listen((position) {
       if (position != null) {
-        print('oo333333333333333333333333333333333333333');
+        print(position);
       }
     });
 
@@ -71,7 +71,6 @@ class MapSampleState extends State<MapSample> {
 
   organiseCompanyLocations() async {
     Uint8List markIcons = await getImages();
-    print('iiiiiiiiiiiiiiiiiiiiiiiiii');
 
     for (CompanyInfor company in widget.companies) {
       setState(() {
@@ -90,14 +89,13 @@ class MapSampleState extends State<MapSample> {
             }));
       });
     }
-    print('Done!!!!!!!!!!!!!!!!!!!!!!!!!!');
   }
 
   double calculateDistance(
     LatLng one,
   ) {
-    print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
-    print('Lat: ${one.latitude} Long: ${one.longitude} ');
+    // print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+    // print('Lat: ${one.latitude} Long: ${one.longitude} ');
 
     LatLng two =
         LatLng(appCtr.pos.value!.latitude, appCtr.pos.value!.longitude);
@@ -120,7 +118,6 @@ class MapSampleState extends State<MapSample> {
               LatLng(company.location.latitude, company.location.latitude))));
     }
 
-    print('ddddddddddddddddddddddddddd');
     print(companyDist);
     companyDist.sort((a, b) => (b.distance).compareTo(a.distance));
     print(companyDist);
